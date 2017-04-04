@@ -1,6 +1,4 @@
-#set( $symbol_pound = '#' )
-#set( $symbol_dollar = '$' )
-#set( $symbol_escape = '\' )
+
 package ${package};
 
 import java.util.logging.Level;
@@ -27,6 +25,7 @@ import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.Self;
 import cz.cuni.amis.pogamut.ut2004.utils.UT2004BotRunner;
 import cz.cuni.amis.utils.collections.MyCollections;
 import cz.cuni.amis.utils.exception.PogamutException;
+import cz.cuni.amis.pogamut.ut2004.communication.messages.gbcommands.StopShooting;
 
 /**
  * Pogamut "Hello world!" example showing few extra things such as introspection and various bot-initializing methods.
@@ -209,7 +208,7 @@ public class NotSoEmptyBot extends UT2004BotModuleController {
             lastPlayer = players.getNearestVisiblePlayer();
             // ... and try to move with straight movement (without any navigation)
             log.info("Running directly to: " + lastPlayer.getId());
-            shoot.shoot(lastPlayer.getId);
+            shoot.shoot(lastPlayer.getId());
             move.moveTo(players.getNearestVisiblePlayer());
             // We've just switched to manual movement ... stop path navigation if running
             if (navigation.isNavigating()) {
