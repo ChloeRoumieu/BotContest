@@ -1,9 +1,13 @@
-choix : skin , arme favorite
-intéraction : émote
-erreur : mauvais chemin, tir imprécis, longer les murs, se retourner
-variation : tir principal, tir secondaire,changement d'arme, combo ( shock, link )
-attitude : berserk, couard, safe, campeur, vanguard, support?
-aide à l'attaque
-émotion : neutre, découragé, nervosité, calme, enragé, confiant
 esquive, strife pendant le combat, anticiper la position de l'adversaire
 s'adapter a la situation ( arme )
+
+erreur : mauvais chemin, tir imprécis, longer les murs, se retourner
+
+choix : skin , arme favorite
+intéraction : émote
+
+variation : tir principal, tir secondaire,changement d'arme, combo ( shock, link, saut marteau bouclier )
+
+aide à l'attaque
+attitude : berserk, couard, safe, campeur, vanguard, support?
+émotion : neutre, découragé, nervosité, calme, enragé, confiant
