@@ -63,12 +63,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     // in constants instead of using directly strings on multiple places of your
     // source code
     protected static final String FRONT = "frontRay";
-    protected static final String LEFT45 = "left45Ray";
+    protected static final String LEFTBAS = "leftBasRay";
     protected static final String LEFT90 = "left90Ray";
-    protected static final String RIGHT45 = "right45Ray";
+    protected static final String RIGHTBAS = "rightBasRay";
     protected static final String RIGHT90 = "right90Ray";
     
-    private AutoTraceRay left, front, right, left90, right90 ;
+    private AutoTraceRay leftbas, front, rightbas, left90, right90 ;
     
      /**
      * Flag indicating that the bot has been just executed.
@@ -81,7 +81,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      * ray.
      */
     @JProp
-    private boolean sensorLeft45 = false;
+    private boolean sensorLeftBas = false;
     private boolean sensorLeft90 = false;
     /**
      * Whether the right45 sensor signalizes the collision. (Computed in the
@@ -89,7 +89,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      * ray.
      */
     @JProp
-    private boolean sensorRight45 = false;
+    private boolean sensorRightBas = false;
     private boolean sensorRight90 = false;
     /**
      * Whether the front sensor signalizes the collision. (Computed in the
@@ -281,7 +281,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public Initialize getInitializeCommand() {
         // just set the name of the bot and his skill level, 1 is the lowest, 7 is the highest
     	// skill level affects how well will the bot aim
-        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(5);
+        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(4);
     }
 
     @Override
@@ -300,9 +300,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         getAct().act(new RemoveRay("All"));
 
         // 2. create new rays
-        raycasting.createRay(LEFT45,  new Vector3d(1, -1, 0), rayLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(LEFTBAS,  new Vector3d(1, -1, -0.5), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(FRONT,   new Vector3d(1, 0, 0), rayLength, fastTrace, floorCorrection, traceActor);
-        raycasting.createRay(RIGHT45, new Vector3d(1, 1, 0), rayLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(RIGHTBAS, new Vector3d(1, 1, -0.5), rayLength, fastTrace, floorCorrection, traceActor);
         // note that we will use only three of them, so feel free to experiment with LEFT90 and RIGHT90 for yourself
         raycasting.createRay(LEFT90,  new Vector3d(0, -1, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHT90, new Vector3d(0, 1, 0), rayLength, fastTrace, floorCorrection, traceActor);
@@ -312,10 +312,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 // once all rays were initialized store the AutoTraceRay objects
                 // that will come in response in local variables, it is just
                 // for convenience
-                left = raycasting.getRay(LEFT45);
+                leftbas = raycasting.getRay(LEFTBAS);
                 left90 = raycasting.getRay(LEFT90);
                 front = raycasting.getRay(FRONT);
-                right = raycasting.getRay(RIGHT45);
+                rightbas = raycasting.getRay(RIGHTBAS);
                 right90 = raycasting.getRay(RIGHT90);
             }
         });
@@ -421,14 +421,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             return;
         }
         sensorFront = front.isResult();
-        sensorLeft45 = left.isResult();
-        sensorRight45 = right.isResult();
+        sensorLeftBas = leftbas.isResult();
+        sensorRightBas = rightbas.isResult();
         sensorLeft90 = left90.isResult();
         sensorRight90 = right90.isResult();
 
-        // is any of the sensor signalig?
-        sensor = sensorFront || sensorLeft45 || sensorRight45 ;
-        
 
         // 1) pick new enemy if the old one has been lost
         if (enemy == null || !enemy.isVisible()) {
@@ -473,11 +470,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         if (enemy.isVisible() && shooting) {
             float rand = random.nextFloat() ;
             if (rand > 0.7) {
-                if (!sensorRight90) {
+                if (!sensorRight90 && sensorRightBas) {
                     //sayGlobal("dodge droite");
                     move.dodgeRight(enemy, false);
                 } else {
-                    if (!sensorLeft90) {
+                    if (!sensorLeft90 && sensorLeftBas) {
                         //sayGlobal("dodge gauche");
                         move.dodgeLeft(enemy, false);
                     } else {
@@ -486,11 +483,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             } else {
                 if (rand > 0.4) {
-                    if (!sensorRight90) {
+                    if (!sensorRight90 && sensorRightBas) {
                         //sayGlobal("strafe droite");
                         move.strafeRight(40);
                     } else {
-                        if (!sensorLeft90) {
+                        if (!sensorLeft90 && sensorLeftBas) {
                             //sayGlobal("strafe gauche");
                             move.strafeLeft(40);
                         }
