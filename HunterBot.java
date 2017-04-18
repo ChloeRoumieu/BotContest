@@ -485,11 +485,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 if (rand > 0.4) {
                     if (!sensorRight90 && sensorRightBas) {
                         //sayGlobal("strafe droite");
-                        move.strafeRight(40);
+                        move.strafeRight(100);
                     } else {
                         if (!sensorLeft90 && sensorLeftBas) {
                             //sayGlobal("strafe gauche");
-                            move.strafeLeft(40);
+                            move.strafeLeft(100);
                         }
                         else {
                             move.jump();
