@@ -1,14 +1,12 @@
 esquive, strife pendant le combat, anticiper la position de l'adversaire
-s'adapter a la situation ( arme )
-Se retourner plus rapidement, reflexes
+s'adapter a la situation (changement d'arme, recherche de vie et/ou de munitions)
 
-erreur : mauvais chemin, tir imprécis, longer les murs, se retourner
+erreur : mauvais chemin, tir imprÃ©cis, longer les murs, se retourner
 
 choix : skin , arme favorite
-intéraction : émote
+intÃ©raction : Ã©mote
 
 variation : tir principal, tir secondaire,changement d'arme, combo ( shock, link, saut marteau bouclier )
 
-aide à l'attaque
-attitude : berserk, couard, safe, campeur, vanguard, support?
-émotion : neutre, découragé, nervosité, calme, enragé, confiant
+attitude : berserk, couard,  campeur
+Ã©motion : neutre, dÃ©couragÃ©, nervositÃ©,  enragÃ©, confiant
