@@ -14,6 +14,7 @@ import cz.cuni.amis.pogamut.base.utils.guice.AgentScoped;
 import cz.cuni.amis.pogamut.base.utils.math.DistanceUtils;
 import cz.cuni.amis.pogamut.base3d.worldview.object.ILocated;
 import cz.cuni.amis.pogamut.base3d.worldview.object.Location;
+import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.Weapon;
 import cz.cuni.amis.pogamut.ut2004.agent.module.utils.TabooSet;
 import cz.cuni.amis.pogamut.ut2004.agent.navigation.NavigationState;
 import cz.cuni.amis.pogamut.ut2004.agent.navigation.UT2004PathAutoFixer;
@@ -47,6 +48,7 @@ import cz.cuni.amis.pogamut.ut2004.utils.UnrealUtils;
 import cz.cuni.amis.utils.collections.MyCollections;
 import cz.cuni.amis.utils.exception.PogamutException;
 import cz.cuni.amis.utils.flag.FlagListener;
+import java.util.Map;
 import javax.vecmath.Vector3d;
 
 /**
@@ -219,9 +221,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponPrefs.addGeneralPref(UT2004ItemType.MINIGUN, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.FLAK_CANNON, true);        
         weaponPrefs.addGeneralPref(UT2004ItemType.ROCKET_LAUNCHER, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.LINK_GUN, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);        
+        weaponPrefs.addGeneralPref(UT2004ItemType.LINK_GUN, true);    
         weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
+        weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);   
     }
     
     /*
@@ -569,6 +571,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     // STATE RUN AROUND ITEMS //
     ////////////////////////////
     protected List<Item> itemsToRunAround = null;
+    
+    protected boolean hasDecentWeapon(){
+        return (this.weaponry.hasWeapon(UT2004ItemType.BIO_RIFLE) || this.weaponry.hasWeapon(UT2004ItemType.FLAK_CANNON) || this.weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN)
+                || this.weaponry.hasWeapon(UT2004ItemType.LINK_GUN) || this.weaponry.hasWeapon(UT2004ItemType.MINIGUN) || this.weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER)
+                || this.weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE));
+    }
 
     protected void stateRunAroundItems() {
         //log.info("Decision is: ITEMS");
@@ -577,24 +585,38 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         
         List<Item> interesting = new ArrayList<Item>();
         
-        // ADD QUADS
-        interesting.addAll(items.getSpawnedItems(UT2004ItemType.U_DAMAGE_PACK).values());
-        // ADD ARMORS
-        for (ItemType itemType : ItemType.Category.ARMOR.getTypes()) {
-                interesting.addAll(items.getSpawnedItems(itemType).values());
+        if (this.hasDecentWeapon()) {
+            // ADD QUADS
+            interesting.addAll(items.getSpawnedItems(UT2004ItemType.U_DAMAGE_PACK).values());
+            interesting.addAll(items.getSpawnedItems(UT2004ItemType.SUPER_HEALTH_PACK).values());
+            // ADD ARMORS
+            for (ItemType itemType : ItemType.Category.ARMOR.getTypes()) {
+                    interesting.addAll(items.getSpawnedItems(itemType).values());
+            }
+        }
+       
+        if (MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
+            // ADD WEAPONS
+            for (ItemType itemType : ItemType.Category.WEAPON.getTypes()) {
+                    if (!weaponry.hasLoadedWeapon(itemType)) interesting.addAll(items.getSpawnedItems(itemType).values());
+            }
+            // ADD HEALTHS
+            if (info.getHealth() < 100) {
+                    interesting.addAll(items.getSpawnedItems(UT2004ItemType.HEALTH_PACK).values());
+            }
         }
         
-        // ADD WEAPONS
-        for (ItemType itemType : ItemType.Category.WEAPON.getTypes()) {
-        	if (!weaponry.hasLoadedWeapon(itemType)) interesting.addAll(items.getSpawnedItems(itemType).values());
-        }
-        // ADD HEALTHS
-        if (info.getHealth() < 100) {
-        	interesting.addAll(items.getSpawnedItems(UT2004ItemType.HEALTH_PACK).values());
+        /*for (int i = 0 ; i < MyCollections.asList(tabooItems.filter(interesting)).size() ; i++)
+            sayGlobal("TEST " + i + " " + MyCollections.asList(tabooItems.filter(interesting)).get(i).toString());*/
+        
+        Item item ;
+        if (!MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
+            item = MyCollections.asList(tabooItems.filter(interesting)).get(0);
+        } else {
+            item = null ;
         }
         
-       // Item item = MyCollections.getRandom(tabooItems.filter(interesting));
-        Item item = MyCollections.getRandom(tabooItems.filter(interesting));
+        
         if (item == null) {
         	log.warning("NO ITEM TO RUN FOR!");
         	if (navigation.isNavigating()) return;
