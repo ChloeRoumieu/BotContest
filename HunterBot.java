@@ -300,9 +300,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         getAct().act(new RemoveRay("All"));
 
         // 2. create new rays
-        raycasting.createRay(LEFTBAS,  new Vector3d(1, -1, -0.5), rayLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(LEFTBAS,  new Vector3d(0, -1, -0.25), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(FRONT,   new Vector3d(1, 0, 0), rayLength, fastTrace, floorCorrection, traceActor);
-        raycasting.createRay(RIGHTBAS, new Vector3d(1, 1, -0.5), rayLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(RIGHTBAS, new Vector3d(0, 1, -0.25), rayLength, fastTrace, floorCorrection, traceActor);
         // note that we will use only three of them, so feel free to experiment with LEFT90 and RIGHT90 for yourself
         raycasting.createRay(LEFT90,  new Vector3d(0, -1, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHT90, new Vector3d(0, 1, 0), rayLength, fastTrace, floorCorrection, traceActor);
@@ -461,15 +461,15 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                     }
                 }
                 
-	       if (shoot.shoot(weaponPrefs, enemy) != null) {
-	            log.info("Shooting at enemy!!!");
-	            shooting = true;
-	        }
+                if (shoot.shoot(weaponPrefs, enemy) != null) {
+                    log.info("Shooting at enemy!!!");
+                    shooting = true;
+                }
         }
         
-        if (enemy.isVisible() && shooting) {
+        if (enemy.isVisible() && distance < 800 && shooting) {
             float rand = random.nextFloat() ;
-            if (rand > 0.7) {
+            if (rand > 0.9) {
                 if (!sensorRight90 && sensorRightBas) {
                     //sayGlobal("dodge droite");
                     move.dodgeRight(enemy, false);
@@ -478,11 +478,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         //sayGlobal("dodge gauche");
                         move.dodgeLeft(enemy, false);
                     } else {
-                        move.doubleJump();
+                        move.jump();
                     }
                 }
             } else {
-                if (rand > 0.4) {
+                if (rand > 0.1) {
                     if (!sensorRight90 && sensorRightBas) {
                         //sayGlobal("strafe droite");
                         move.strafeRight(100);
@@ -490,9 +490,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         if (!sensorLeft90 && sensorLeftBas) {
                             //sayGlobal("strafe gauche");
                             move.strafeLeft(100);
-                        }
-                        else {
-                            move.jump();
                         }
                     }
                 }
@@ -580,21 +577,23 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         
         List<Item> interesting = new ArrayList<Item>();
         
+        // ADD QUADS
+        interesting.addAll(items.getSpawnedItems(UT2004ItemType.U_DAMAGE_PACK).values());
+        // ADD ARMORS
+        for (ItemType itemType : ItemType.Category.ARMOR.getTypes()) {
+                interesting.addAll(items.getSpawnedItems(itemType).values());
+        }
+        
         // ADD WEAPONS
         for (ItemType itemType : ItemType.Category.WEAPON.getTypes()) {
         	if (!weaponry.hasLoadedWeapon(itemType)) interesting.addAll(items.getSpawnedItems(itemType).values());
         }
-        // ADD ARMORS
-        for (ItemType itemType : ItemType.Category.ARMOR.getTypes()) {
-        	interesting.addAll(items.getSpawnedItems(itemType).values());
-        }
-        // ADD QUADS
-        interesting.addAll(items.getSpawnedItems(UT2004ItemType.U_DAMAGE_PACK).values());
         // ADD HEALTHS
         if (info.getHealth() < 100) {
         	interesting.addAll(items.getSpawnedItems(UT2004ItemType.HEALTH_PACK).values());
         }
         
+       // Item item = MyCollections.getRandom(tabooItems.filter(interesting));
         Item item = MyCollections.getRandom(tabooItems.filter(interesting));
         if (item == null) {
         	log.warning("NO ITEM TO RUN FOR!");
