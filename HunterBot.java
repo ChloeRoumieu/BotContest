@@ -606,9 +606,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
         }
         
-        /*for (int i = 0 ; i < MyCollections.asList(tabooItems.filter(interesting)).size() ; i++)
-            sayGlobal("TEST " + i + " " + MyCollections.asList(tabooItems.filter(interesting)).get(i).toString());*/
-        
         Item item ;
         if (!MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
             item = MyCollections.asList(tabooItems.filter(interesting)).get(0);
