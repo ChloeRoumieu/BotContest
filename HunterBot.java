@@ -374,6 +374,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public void logic() {
 
         if (info.getHealth() < criticalHealthLevel) {
+            if (info.isShooting() || info.isSecondaryShooting()) {
+                getAct().act(new StopShooting());
+            }
             this.stateMedKit();
             return;
         }
