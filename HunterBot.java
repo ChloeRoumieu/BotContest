@@ -67,10 +67,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     protected static final String FRONT = "frontRay";
     protected static final String LEFTBAS = "leftBasRay";
     protected static final String LEFT90 = "left90Ray";
+    protected static final String LEFTSHORT = "leftShort";
     protected static final String RIGHTBAS = "rightBasRay";
     protected static final String RIGHT90 = "right90Ray";
+    protected static final String RIGHTSHORT = "rightShort";
     
-    private AutoTraceRay leftbas, front, rightbas, left90, right90 ;
+    private AutoTraceRay front, leftbas , rightbas, left90, right90, leftshort, rightshort ;
     
      /**
      * Flag indicating that the bot has been just executed.
@@ -85,6 +87,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     @JProp
     private boolean sensorLeftBas = false;
     private boolean sensorLeft90 = false;
+    private boolean sensorLeftShort = false;
     /**
      * Whether the right45 sensor signalizes the collision. (Computed in the
      * doLogic()) <p><p> Using {@link RaycastingBot#RIGHT45} as the key for the
@@ -93,6 +96,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     @JProp
     private boolean sensorRightBas = false;
     private boolean sensorRight90 = false;
+    private boolean sensorRightShort = false;
     /**
      * Whether the front sensor signalizes the collision. (Computed in the
      * doLogic()) <p><p> Using {@link RaycastingBot#FRONT} as the key for the
@@ -288,7 +292,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public Initialize getInitializeCommand() {
         // just set the name of the bot and his skill level, 1 is the lowest, 7 is the highest
     	// skill level affects how well will the bot aim
-        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(4);
+        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(5);
     }
 
     @Override
@@ -297,6 +301,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     	//bot.getLogger().getCategory("Parser").setLevel(Level.ALL);
         // initialize rays for raycasting
         final int rayLength = (int) (UnrealUtils.CHARACTER_COLLISION_RADIUS * 20);
+        final int rayShortLength = 150 ;
         // settings for the rays
         boolean fastTrace = true;        // perform only fast trace == we just need true/false information
         boolean floorCorrection = false; // provide floor-angle correction for the ray (when the bot is running on the skewed floor, the ray gets rotated to match the skew)
@@ -307,23 +312,26 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         getAct().act(new RemoveRay("All"));
 
         // 2. create new rays
-        raycasting.createRay(LEFTBAS,  new Vector3d(0, -1, -0.25), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(FRONT,   new Vector3d(1, 0, 0), rayLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(LEFTBAS,  new Vector3d(0, -1, -0.25), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHTBAS, new Vector3d(0, 1, -0.25), rayLength, fastTrace, floorCorrection, traceActor);
-        // note that we will use only three of them, so feel free to experiment with LEFT90 and RIGHT90 for yourself
         raycasting.createRay(LEFT90,  new Vector3d(0, -1, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHT90, new Vector3d(0, 1, 0), rayLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(LEFTSHORT,  new Vector3d(0, -1, 0), rayShortLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(RIGHTSHORT, new Vector3d(0, 1, 0), rayShortLength, fastTrace, floorCorrection, traceActor);
         // register listener called when all rays are set up in the UT engine
         raycasting.getAllRaysInitialized().addListener(new FlagListener<Boolean>() {
             public void flagChanged(Boolean changedValue) {
                 // once all rays were initialized store the AutoTraceRay objects
                 // that will come in response in local variables, it is just
                 // for convenience
+                front = raycasting.getRay(FRONT);
                 leftbas = raycasting.getRay(LEFTBAS);
                 left90 = raycasting.getRay(LEFT90);
-                front = raycasting.getRay(FRONT);
+                leftshort = raycasting.getRay(LEFTSHORT);
                 rightbas = raycasting.getRay(RIGHTBAS);
                 right90 = raycasting.getRay(RIGHT90);
+                rightshort = raycasting.getRay(RIGHTSHORT);
             }
         });
         // have you noticed the FlagListener interface? The Pogamut is often using {@link Flag} objects that
@@ -486,11 +494,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         if (enemy.isVisible() && distance < 800 && shooting) {
             float rand = random.nextFloat() ;
             if (rand > 0.9) {
-                if (!sensorRight90 && sensorRightBas) {
+                if (!sensorRightShort && sensorRightBas) {
                     //sayGlobal("dodge droite");
                     move.dodgeRight(enemy, false);
                 } else {
-                    if (!sensorLeft90 && sensorLeftBas) {
+                    if (!sensorLeftShort && sensorLeftBas) {
                         //sayGlobal("dodge gauche");
                         move.dodgeLeft(enemy, false);
                     } else {
@@ -498,15 +506,15 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                     }
                 }
             } else {
-                if (rand > 0.1) {
-                    if (!sensorRight90 && sensorRightBas) {
-                        //sayGlobal("strafe droite");
-                        move.strafeRight(100);
+                if (!sensorRightShort && sensorRightBas) {
+                    //sayGlobal("strafe droite");
+                    move.strafeRight(100);
+                } else {
+                    if (!sensorLeftShort && sensorLeftBas) {
+                        //sayGlobal("strafe gauche");
+                        move.strafeLeft(100);
                     } else {
-                        if (!sensorLeft90 && sensorLeftBas) {
-                            //sayGlobal("strafe gauche");
-                            move.strafeLeft(100);
-                        }
+                        move.jump();
                     }
                 }
             }
@@ -653,6 +661,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public static void main(String args[]) throws PogamutException {
         // starts 3 Hunters at once
         // note that this is the most easy way to get a bunch of (the same) bots running at the same time        
-    	new UT2004BotRunner(HunterBot.class, "Hunter").setMain(true).setLogLevel(Level.INFO).startAgents(1);
+    	new UT2004BotRunner(HunterBot.class, "Hunter").setMain(true).setLogLevel(Level.INFO).startAgents(2);
     }
 }
