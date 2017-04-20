@@ -491,14 +491,14 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
         }
         
-        if (enemy.isVisible() && distance < 800 && shooting) {
+        if (enemy.isVisible() && distance < 1200 && shooting) {
             float rand = random.nextFloat() ;
             if (rand > 0.9) {
-                if (!sensorRightShort && sensorRightBas) {
+                if ((!sensorRightShort) && sensorRightBas) {
                     //sayGlobal("dodge droite");
                     move.dodgeRight(enemy, false);
                 } else {
-                    if (!sensorLeftShort && sensorLeftBas) {
+                    if ((!sensorLeftShort) && sensorLeftBas) {
                         //sayGlobal("dodge gauche");
                         move.dodgeLeft(enemy, false);
                     } else {
@@ -506,13 +506,13 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                     }
                 }
             } else {
-                if (!sensorRightShort && sensorRightBas) {
+                if ((!sensorRightShort) && sensorRightBas) {
                     //sayGlobal("strafe droite");
-                    move.strafeRight(100);
+                    move.strafeRight(150);
                 } else {
-                    if (!sensorLeftShort && sensorLeftBas) {
+                    if ((!sensorLeftShort) && sensorLeftBas) {
                         //sayGlobal("strafe gauche");
-                        move.strafeLeft(100);
+                        move.strafeLeft(150);
                     } else {
                         move.jump();
                     }
