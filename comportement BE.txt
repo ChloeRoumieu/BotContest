@@ -1,10 +1,9 @@
 esquive, strife pendant le combat, anticiper la position de l'adversaire
 s'adapter a la situation (changement d'arme, recherche de vie et/ou de munitions)
 
-erreur : mauvais chemin, tir imprécis, longer les murs, se retourner
+erreur : tir imprécis, longer les murs
 
 choix : skin , arme favorite
-intéraction : émote
 
 variation : tir principal, tir secondaire,changement d'arme, combo ( shock, link, saut marteau bouclier )
 
