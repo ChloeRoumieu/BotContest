@@ -137,6 +137,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     @JProp
     public int healthLevel = 75;
     /**
+     * how low the health level should be to start running away from the fight
+     */
+    @JProp
+    public int criticalHealthLevel = 20;
+    /**
      * how many bot the hunter killed other bots (i.e., bot has fragged them /
      * got point for killing somebody)
      */
@@ -366,7 +371,13 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      * @throws cz.cuni.amis.pogamut.base.exceptions.PogamutException
      */
     @Override
-    public void logic() {    	    	
+    public void logic() {
+
+        if (info.getHealth() < criticalHealthLevel) {
+            this.stateMedKit();
+            return;
+        }
+        
         // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
         if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
             stateEngage();
