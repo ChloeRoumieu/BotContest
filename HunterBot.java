@@ -302,6 +302,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         // initialize rays for raycasting
         final int rayLength = (int) (UnrealUtils.CHARACTER_COLLISION_RADIUS * 20);
         final int rayShortLength = 150 ;
+        final int rayBasLength = 210 ;
         // settings for the rays
         boolean fastTrace = true;        // perform only fast trace == we just need true/false information
         boolean floorCorrection = false; // provide floor-angle correction for the ray (when the bot is running on the skewed floor, the ray gets rotated to match the skew)
@@ -313,8 +314,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
 
         // 2. create new rays
         raycasting.createRay(FRONT,   new Vector3d(1, 0, 0), rayLength, fastTrace, floorCorrection, traceActor);
-        raycasting.createRay(LEFTBAS,  new Vector3d(0, -1, -0.25), rayLength, fastTrace, floorCorrection, traceActor);
-        raycasting.createRay(RIGHTBAS, new Vector3d(0, 1, -0.25), rayLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(LEFTBAS,  new Vector3d(0, -1, -0.3), rayBasLength, fastTrace, floorCorrection, traceActor);
+        raycasting.createRay(RIGHTBAS, new Vector3d(0, 1, -0.3), rayBasLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(LEFT90,  new Vector3d(0, -1, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHT90, new Vector3d(0, 1, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(LEFTSHORT,  new Vector3d(0, -1, 0), rayShortLength, fastTrace, floorCorrection, traceActor);
@@ -449,6 +450,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         sensorRightBas = rightbas.isResult();
         sensorLeft90 = left90.isResult();
         sensorRight90 = right90.isResult();
+        sensorLeftShort = leftshort.isResult();
+        sensorRightShort = rightshort.isResult();
 
 
         // 1) pick new enemy if the old one has been lost
@@ -491,37 +494,62 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
         }
         
-        if (enemy.isVisible() && distance < 1200 && shooting) {
-            float rand = random.nextFloat() ;
-            if (rand > 0.9) {
-                if ((!sensorRightShort) && sensorRightBas) {
-                    //sayGlobal("dodge droite");
-                    move.dodgeRight(enemy, false);
-                } else {
-                    if ((!sensorLeftShort) && sensorLeftBas) {
+        if (enemy.isVisible() && distance < 800) {
+            float rand1 = random.nextFloat() ;
+            float rand2 = random.nextFloat() ;
+            boolean direction = true ; //true -> droite, false -> gauche
+            if (rand1 > 0.5) {
+                direction = false ;
+            }
+            if (rand2 > 0.9) {
+                if ((!sensorRightShort) && sensorRightBas && (!sensorRightShort) && sensorRightBas ) {
+                    if (direction) {
+                        //sayGlobal("dodge droite");
+                        move.dodgeRight(enemy, false);
+                    } else {
                         //sayGlobal("dodge gauche");
                         move.dodgeLeft(enemy, false);
+                    }
+                } else {
+                    if ((!sensorRightShort) && sensorRightBas) {
+                        //sayGlobal("dodge droite");
+                        move.dodgeRight(enemy, false);
                     } else {
-                        move.jump();
+                        if ((!sensorLeftShort) && sensorLeftBas) {
+                            //sayGlobal("dodge gauche");
+                            move.dodgeLeft(enemy, false);
+                        } else {
+                            move.jump();
+                        }
                     }
                 }
             } else {
-                if ((!sensorRightShort) && sensorRightBas) {
-                    //sayGlobal("strafe droite");
-                    move.strafeRight(150);
-                } else {
-                    if ((!sensorLeftShort) && sensorLeftBas) {
-                        //sayGlobal("strafe gauche");
-                        move.strafeLeft(150);
+                if ((!sensorRightShort) && sensorRightBas && (!sensorRightShort) && sensorRightBas ) {
+                    if (direction) {
+                        //sayGlobal("strafe droite");
+                        move.strafeRight(200);
                     } else {
-                        move.jump();
+                        //sayGlobal("strafe gauche");
+                        move.strafeLeft(200);
+                    }
+                } else {
+                    if ((!sensorRightShort) && sensorRightBas) {
+                        //sayGlobal("strafe droite");
+                        move.strafeRight(200);
+                    } else {
+                        if ((!sensorLeftShort) && sensorLeftBas) {
+                            //sayGlobal("strafe gauche");
+                            move.strafeLeft(200);
+                        } else {
+                            move.jump();
+                        }
                     }
                 }
             }
         }
 
         // 3) if enemy is far or not visible - run to him
-        int decentDistance = Math.round(random.nextFloat() * 800) + 200;
+        int decentDistance = Math.round(random.nextFloat() * 800);
         if (!enemy.isVisible() || !shooting || decentDistance < distance) {
             if (!runningToPlayer) {
                 navigation.navigate(enemy);
@@ -661,6 +689,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public static void main(String args[]) throws PogamutException {
         // starts 3 Hunters at once
         // note that this is the most easy way to get a bunch of (the same) bots running at the same time        
-    	new UT2004BotRunner(HunterBot.class, "Hunter").setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter").setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
