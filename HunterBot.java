@@ -495,7 +495,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
         }
         
-        if (enemy.isVisible() && distance < 800) {
+        if (enemy.isVisible() && distance < 1200) {
             float rand1 = random.nextFloat() ;
             float rand2 = random.nextFloat() ;
             boolean direction = true ; //true -> droite, false -> gauche
@@ -554,7 +554,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         move.turnTo(enemy);
 
         // 3) if enemy is far or not visible - run to him
-        int decentDistance = Math.round(random.nextFloat() * 800);
+        //int decentDistance = Math.round(random.nextFloat() * 800);
+        int decentDistance = 100 ;
+        distance = info.getLocation().getDistance(enemy.getLocation());
         if (!enemy.isVisible() || !shooting || decentDistance < distance) {
             if (!runningToPlayer) {
                 navigation.navigate(enemy);
