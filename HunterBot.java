@@ -14,6 +14,7 @@ import cz.cuni.amis.pogamut.base.utils.guice.AgentScoped;
 import cz.cuni.amis.pogamut.base.utils.math.DistanceUtils;
 import cz.cuni.amis.pogamut.base3d.worldview.object.ILocated;
 import cz.cuni.amis.pogamut.base3d.worldview.object.Location;
+import cz.cuni.amis.pogamut.base3d.worldview.object.Rotation;
 import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.Weapon;
 import cz.cuni.amis.pogamut.ut2004.agent.module.utils.TabooSet;
 import cz.cuni.amis.pogamut.ut2004.agent.navigation.NavigationState;
@@ -292,7 +293,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public Initialize getInitializeCommand() {
         // just set the name of the bot and his skill level, 1 is the lowest, 7 is the highest
     	// skill level affects how well will the bot aim
-        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(5);
+        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(4);
     }
 
     @Override
@@ -502,6 +503,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 direction = false ;
             }
             if (rand2 > 0.9) {
+                move.doubleJump();
+            }
+            if (rand2 > 0.8) {
                 if ((!sensorRightShort) && sensorRightBas && (!sensorRightShort) && sensorRightBas ) {
                     if (direction) {
                         //sayGlobal("dodge droite");
@@ -547,6 +551,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             }
         }
+        move.turnTo(enemy);
 
         // 3) if enemy is far or not visible - run to him
         int decentDistance = Math.round(random.nextFloat() * 800);
