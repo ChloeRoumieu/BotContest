@@ -1,4 +1,4 @@
-package com.mycompany.mavenproject5;
+package com.mycompany.botcontest;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -72,8 +72,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     protected static final String RIGHTBAS = "rightBasRay";
     protected static final String RIGHT90 = "right90Ray";
     protected static final String RIGHTSHORT = "rightShort";
-    
-    private AutoTraceRay front, leftbas , rightbas, left90, right90, leftshort, rightshort ;
+    //protected static final String FRONTHAUT = "frontHaut";
+    private AutoTraceRay front, leftbas , rightbas, left90, right90, leftshort, rightshort;
     
      /**
      * Flag indicating that the bot has been just executed.
@@ -105,6 +105,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      */
     @JProp
     private boolean sensorFront = false;
+  //  private boolean sensorFrontHaut = false;
     /**
      * Whether the bot is moving. (Computed in the doLogic())
      */
@@ -197,6 +198,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     /**
      * Bot's preparation - called before the bot is connected to GB2004 and
      * launched into UT2004.
+     * @param bot
      */
     @Override
     public void prepareBot(UT2004Bot bot) {
@@ -334,6 +336,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 rightbas = raycasting.getRay(RIGHTBAS);
                 right90 = raycasting.getRay(RIGHT90);
                 rightshort = raycasting.getRay(RIGHTSHORT);
+                //frontHaut = raycasting.getRay(FRONTHAUT);
             }
         });
         // have you noticed the FlagListener interface? The Pogamut is often using {@link Flag} objects that
@@ -420,7 +423,14 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             return;
         }
 
-        // 6) if nothing ... run around items
+        //6) have you enough adrenaline ?
+        // impossible d'utiliser les autres combos, seulement le booster, les autres fonctions utilisent aussi le booster
+        if (info.isAdrenalineSufficient()) {
+            log.info("use adrenaline.");
+            combo.performSpeed();
+        }
+        
+        // 7) if nothing ... run around items
         stateRunAroundItems();
     }
 
@@ -476,7 +486,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         	// 2) or shoot on enemy if it is visible
                 distance = info.getLocation().getDistance(enemy.getLocation());
                 if (distance > 850) {
-                        //sayGlobal("Adversaire éloigné");
+                        //sayGlobal("Adversaire ï¿½loignï¿½");
                         defineWeaponPrefsLongRange(bot);
                         
                 } else {
@@ -495,7 +505,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
         }
         
-        if (enemy.isVisible() && distance < 1200) {
+        if (enemy.isVisible() && distance < 800) {
             float rand1 = random.nextFloat() ;
             float rand2 = random.nextFloat() ;
             boolean direction = true ; //true -> droite, false -> gauche
@@ -554,9 +564,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         move.turnTo(enemy);
 
         // 3) if enemy is far or not visible - run to him
-        //int decentDistance = Math.round(random.nextFloat() * 800);
-        int decentDistance = 100 ;
-        distance = info.getLocation().getDistance(enemy.getLocation());
+        int decentDistance = Math.round(random.nextFloat() * 800);
         if (!enemy.isVisible() || !shooting || decentDistance < distance) {
             if (!runningToPlayer) {
                 navigation.navigate(enemy);
@@ -661,6 +669,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             if (info.getHealth() < 100) {
                     interesting.addAll(items.getSpawnedItems(UT2004ItemType.HEALTH_PACK).values());
             }
+            // ADD ADRENALINE
+            interesting.addAll(items.getSpawnedItems(UT2004ItemType.ADRENALINE_PACK).values());
         }
         
         Item item ;
@@ -691,11 +701,30 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public void botKilled(BotKilled event) {
     	reset();
     }
-
+    
     ///////////////////////////////////
     public static void main(String args[]) throws PogamutException {
         // starts 3 Hunters at once
-        // note that this is the most easy way to get a bunch of (the same) bots running at the same time        
-    	new UT2004BotRunner(HunterBot.class, "Hunter").setMain(true).setLogLevel(Level.INFO).startAgents(1);
+        String host = "localhost";
+        int port = 3000;
+
+        if (args.length > 0)
+        {
+                host = args[0];
+        }
+        if (args.length > 1)
+        {
+                String customPort = args[1];
+                try
+                {
+                        port = Integer.parseInt(customPort);
+                }
+                catch (Exception e)
+                {
+                        System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
+                }
+        }     
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
+
