@@ -15,6 +15,7 @@ import cz.cuni.amis.pogamut.base.utils.math.DistanceUtils;
 import cz.cuni.amis.pogamut.base3d.worldview.object.ILocated;
 import cz.cuni.amis.pogamut.base3d.worldview.object.Location;
 import cz.cuni.amis.pogamut.base3d.worldview.object.Rotation;
+import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.AdrenalineCombo;
 import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.Weapon;
 import cz.cuni.amis.pogamut.ut2004.agent.module.utils.TabooSet;
 import cz.cuni.amis.pogamut.ut2004.agent.navigation.NavigationState;
@@ -61,7 +62,21 @@ import javax.vecmath.Vector3d;
  */
 @AgentScoped
 public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
-
+    
+    /* module pour gérer les combos d'adrénaline */
+    protected OurAdrenalineCombo adrenalineCombo;
+    
+    /**
+	 * Initializes memory/command modules of the bot.
+	 * 
+	 * @param bot
+	 */
+    @Override
+    protected void initializeModules(UT2004Bot bot) {
+        super.initializeModules(bot);
+        adrenalineCombo = new OurAdrenalineCombo(bot, info);
+    }
+    
     // Constants for rays' ids. It is allways better to store such values
     // in constants instead of using directly strings on multiple places of your
     // source code
@@ -427,7 +442,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         // impossible d'utiliser les autres combos, seulement le booster, les autres fonctions utilisent aussi le booster
         if (info.isAdrenalineSufficient()) {
             log.info("use adrenaline.");
-            combo.performSpeed();
+            adrenalineCombo.performInvisible();
         }
         
         // 7) if nothing ... run around items
@@ -650,7 +665,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         
         List<Item> interesting = new ArrayList<Item>();
         
-        if (this.hasDecentWeapon()) {
+      /*  if (this.hasDecentWeapon()) {
             // ADD QUADS
             interesting.addAll(items.getSpawnedItems(UT2004ItemType.U_DAMAGE_PACK).values());
             interesting.addAll(items.getSpawnedItems(UT2004ItemType.SUPER_HEALTH_PACK).values());
@@ -668,10 +683,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             // ADD HEALTHS
             if (info.getHealth() < 100) {
                     interesting.addAll(items.getSpawnedItems(UT2004ItemType.HEALTH_PACK).values());
-            }
+            }*/
             // ADD ADRENALINE
             interesting.addAll(items.getSpawnedItems(UT2004ItemType.ADRENALINE_PACK).values());
-        }
+       // }
         
         Item item ;
         if (!MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
