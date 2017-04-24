@@ -319,7 +319,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     	//bot.getLogger().getCategory("Parser").setLevel(Level.ALL);
         // initialize rays for raycasting
         final int rayLength = (int) (UnrealUtils.CHARACTER_COLLISION_RADIUS * 20);
-        final int rayShortLength = 150 ;
+        final int rayShortLength = 125 ;
         final int rayBasLength = 210 ;
         // settings for the rays
         boolean fastTrace = true;        // perform only fast trace == we just need true/false information
@@ -525,20 +525,25 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
         }
         
-        if (enemy.isVisible() && distance < 800) {
+        if (enemy.isVisible() && distance < 1200) {
             float rand1 = random.nextFloat() ;
             float rand2 = random.nextFloat() ;
             boolean direction = true ; //true -> droite, false -> gauche
             if (rand1 > 0.5) {
                 direction = false ;
             }
+            if (rand2 < 0.2) {
+                move.doubleJump();
+                //sayGlobal("double saut1");
+                rand2 = 0 ;
+            }
             if (rand2 > 0.8) {
                 if ((!sensorRightShort) && sensorRightBas && (!sensorRightShort) && sensorRightBas ) {
                     if (direction) {
-                        //sayGlobal("dodge droite");
+                        //sayGlobal("dodge droite1");
                         move.dodgeRight(enemy, false);
                     } else {
-                        //sayGlobal("dodge gauche");
+                        //sayGlobal("dodge gauche1");
                         move.dodgeLeft(enemy, false);
                     }
                 } else {
@@ -549,16 +554,19 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         if ((!sensorLeftShort) && sensorLeftBas) {
                             //sayGlobal("dodge gauche");
                             move.dodgeLeft(enemy, false);
+                        } else {
+                            move.doubleJump();
+                            //sayGlobal("double saut");
                         }
                     }
                 }
             } else {
                 if ((!sensorRightShort) && sensorRightBas && (!sensorRightShort) && sensorRightBas ) {
                     if (direction) {
-                        //sayGlobal("strafe droite");
+                        //sayGlobal("strafe droite1");
                         move.strafeRight(200);
                     } else {
-                        //sayGlobal("strafe gauche");
+                        //sayGlobal("strafe gauche1");
                         move.strafeLeft(200);
                     }
                 } else {
@@ -569,15 +577,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         if ((!sensorLeftShort) && sensorLeftBas) {
                             //sayGlobal("strafe gauche");
                             move.strafeLeft(200);
+                        } else {
+                            move.jump();
+                            //sayGlobal("saut");
                         }
                     }
-                }
-            }
-            if (this.info.getVelocity().isZero()){
-                if (rand2 > 0.8) {
-                    move.doubleJump();
-                } else {
-                    move.jump();
                 }
             }
         }
@@ -585,6 +589,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
 
         // 3) if enemy is far or not visible - run to him
         int decentDistance = Math.round(random.nextFloat() * 800);
+        distance = info.getLocation().getDistance(enemy.getLocation());
         if (!enemy.isVisible() || !shooting || decentDistance < distance) {
             if (!runningToPlayer) {
                 navigation.navigate(enemy);
