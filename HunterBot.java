@@ -527,9 +527,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             if (rand1 > 0.5) {
                 direction = false ;
             }
-            if (rand2 > 0.9) {
-                move.doubleJump();
-            }
             if (rand2 > 0.8) {
                 if ((!sensorRightShort) && sensorRightBas && (!sensorRightShort) && sensorRightBas ) {
                     if (direction) {
@@ -547,8 +544,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         if ((!sensorLeftShort) && sensorLeftBas) {
                             //sayGlobal("dodge gauche");
                             move.dodgeLeft(enemy, false);
-                        } else {
-                            move.jump();
                         }
                     }
                 }
@@ -569,10 +564,15 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         if ((!sensorLeftShort) && sensorLeftBas) {
                             //sayGlobal("strafe gauche");
                             move.strafeLeft(200);
-                        } else {
-                            move.jump();
                         }
                     }
+                }
+            }
+            if (this.info.getVelocity().isZero()){
+                if (rand2 > 0.8) {
+                    move.doubleJump();
+                } else {
+                    move.jump();
                 }
             }
         }
