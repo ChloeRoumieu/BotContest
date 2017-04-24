@@ -532,11 +532,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             if (rand1 > 0.5) {
                 direction = false ;
             }
-            if (rand2 < 0.2) {
-                move.doubleJump();
-                //sayGlobal("double saut1");
-                rand2 = 0 ;
-            }
             if (rand2 > 0.8) {
                 if ((!sensorRightShort) && sensorRightBas && (!sensorLeftShort) && sensorLeftBas ) {
                     if (direction) {
@@ -584,6 +579,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                     }
                 }
             }
+        }
+        if (bot.getVelocity().isZero()){
+            move.doubleJump();
         }
         move.turnTo(enemy);
 
