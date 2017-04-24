@@ -561,7 +561,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                     }
                 }
             } else {
-                if ((!sensorRightShort) && sensorRightBas && (!sensorRightShort) && sensorRightBas ) {
+                if ((!sensorRightShort) && sensorRightBas && (!sensorLeftShort) && sensorLeftBas ) {
                     if (direction) {
                         //sayGlobal("strafe droite1");
                         move.strafeRight(200);
