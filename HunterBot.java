@@ -442,7 +442,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         // impossible d'utiliser les autres combos, seulement le booster, les autres fonctions utilisent aussi le booster
         if (info.isAdrenalineSufficient()) {
             log.info("use adrenaline.");
-            adrenalineCombo.performInvisible();
+            if (info.getHealth() < healthLevel){
+                adrenalineCombo.performDefensive();
+            }
+            else{
+                adrenalineCombo.performInvisible();
+            }
         }
         
         // 7) if nothing ... run around items
