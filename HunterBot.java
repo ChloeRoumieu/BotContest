@@ -538,7 +538,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 rand2 = 0 ;
             }
             if (rand2 > 0.8) {
-                if ((!sensorRightShort) && sensorRightBas && (!sensorRightShort) && sensorRightBas ) {
+                if ((!sensorRightShort) && sensorRightBas && (!sensorLeftShort) && sensorLeftBas ) {
                     if (direction) {
                         //sayGlobal("dodge droite1");
                         move.dodgeRight(enemy, false);
