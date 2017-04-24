@@ -665,7 +665,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         
         List<Item> interesting = new ArrayList<Item>();
         
-      /*  if (this.hasDecentWeapon()) {
+        if (this.hasDecentWeapon()) {
             // ADD QUADS
             interesting.addAll(items.getSpawnedItems(UT2004ItemType.U_DAMAGE_PACK).values());
             interesting.addAll(items.getSpawnedItems(UT2004ItemType.SUPER_HEALTH_PACK).values());
@@ -683,10 +683,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             // ADD HEALTHS
             if (info.getHealth() < 100) {
                     interesting.addAll(items.getSpawnedItems(UT2004ItemType.HEALTH_PACK).values());
-            }*/
+            }
             // ADD ADRENALINE
             interesting.addAll(items.getSpawnedItems(UT2004ItemType.ADRENALINE_PACK).values());
-       // }
+        }
         
         Item item ;
         if (!MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
