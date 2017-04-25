@@ -406,8 +406,16 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     }
     
     @EventListener(eventClass=BotDamaged.class)
-    public void botDamaged(BotDamaged event) {
-    	log.info("I have just been hurt by other bot for: " + event.getDamageType() + "[" + event.getDamage() + "]");
+    public void damageType(BotDamaged event) {
+       if( event.isBulletHit() ) {
+           this.stateHit();
+           log.info("I have just been hurt by other bot for: " + event.getDamageType() + "[" + event.getDamage() + "]");
+       }
+       if (event.isCausedByWorld()){
+           move.doubleJump();
+           stateMedKit();
+           log.info("World damage " + event.getDamageType() + "[" + event.getDamage() + "]");
+       }
     }
 
     /**
