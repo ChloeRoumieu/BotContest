@@ -80,15 +80,16 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     // Constants for rays' ids. It is allways better to store such values
     // in constants instead of using directly strings on multiple places of your
     // source code
-    protected static final String FRONT = "frontRay";
+    //protected static final String FRONT = "frontRay";
     protected static final String LEFTBAS = "leftBasRay";
-    protected static final String LEFT90 = "left90Ray";
+    //protected static final String LEFT90 = "left90Ray";
     protected static final String LEFTSHORT = "leftShort";
     protected static final String RIGHTBAS = "rightBasRay";
-    protected static final String RIGHT90 = "right90Ray";
+    //protected static final String RIGHT90 = "right90Ray";
     protected static final String RIGHTSHORT = "rightShort";
     //protected static final String FRONTHAUT = "frontHaut";
-    private AutoTraceRay front, leftbas , rightbas, left90, right90, leftshort, rightshort;
+    private AutoTraceRay leftbas , rightbas, leftshort, rightshort;
+    //private AutoTraceRay front, left90, right90 ;
     
      /**
      * Flag indicating that the bot has been just executed.
@@ -102,7 +103,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      */
     @JProp
     private boolean sensorLeftBas = false;
-    private boolean sensorLeft90 = false;
+    //private boolean sensorLeft90 = false;
     private boolean sensorLeftShort = false;
     /**
      * Whether the right45 sensor signalizes the collision. (Computed in the
@@ -111,15 +112,15 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      */
     @JProp
     private boolean sensorRightBas = false;
-    private boolean sensorRight90 = false;
+    //private boolean sensorRight90 = false;
     private boolean sensorRightShort = false;
     /**
      * Whether the front sensor signalizes the collision. (Computed in the
      * doLogic()) <p><p> Using {@link RaycastingBot#FRONT} as the key for the
      * ray.
      */
-    @JProp
-    private boolean sensorFront = false;
+    //@JProp
+    //private boolean sensorFront = false;
   //  private boolean sensorFrontHaut = false;
     /**
      * Whether the bot is moving. (Computed in the doLogic())
@@ -242,21 +243,46 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
         });
 
-        // DEFINE DEFAULT WEAPON PREFERENCES
-        weaponPrefs.addGeneralPref(UT2004ItemType.LIGHTNING_GUN, true);                
+        // FIRST we DEFINE GENERAL WEAPON PREFERENCES
+        weaponPrefs.addGeneralPref(UT2004ItemType.MINIGUN, false);
+        weaponPrefs.addGeneralPref(UT2004ItemType.LINK_GUN, false);
+        weaponPrefs.addGeneralPref(UT2004ItemType.LIGHTNING_GUN, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.SHOCK_RIFLE, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.MINIGUN, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.FLAK_CANNON, true);        
         weaponPrefs.addGeneralPref(UT2004ItemType.ROCKET_LAUNCHER, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.LINK_GUN, true);    
+        weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);        
+        weaponPrefs.addGeneralPref(UT2004ItemType.FLAK_CANNON, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);   
+		
+        // AND THEN RANGED
+        weaponPrefs.newPrefsRange(80)
+                .add(UT2004ItemType.SHIELD_GUN, true);
+        
+        weaponPrefs.newPrefsRange(400)
+                .add(UT2004ItemType.FLAK_CANNON, true)
+                .add(UT2004ItemType.MINIGUN, true)
+                .add(UT2004ItemType.LINK_GUN, false)
+                .add(UT2004ItemType.SHOCK_RIFLE, false)
+                .add(UT2004ItemType.LIGHTNING_GUN, true)
+                .add(UT2004ItemType.ASSAULT_RIFLE, true);
+
+        weaponPrefs.newPrefsRange(800)
+                .add(UT2004ItemType.ROCKET_LAUNCHER, true)
+                .add(UT2004ItemType.MINIGUN, false)
+                .add(UT2004ItemType.FLAK_CANNON, false)
+                .add(UT2004ItemType.LINK_GUN, true)
+                .add(UT2004ItemType.SHOCK_RIFLE, true)
+                .add(UT2004ItemType.LIGHTNING_GUN, true)
+                .add(UT2004ItemType.ASSAULT_RIFLE, true);
+
+        weaponPrefs.newPrefsRange(100000)
+                .add(UT2004ItemType.LIGHTNING_GUN, true)
+                .add(UT2004ItemType.SHOCK_RIFLE, true); 
     }
     
     /*
     * Change the default weapon preferences
     */
-    public void defineWeaponPrefsLongRange(UT2004Bot bot) {
+    /*public void defineWeaponPrefsLongRange(UT2004Bot bot) {
         weaponPrefs.addGeneralPref(UT2004ItemType.LIGHTNING_GUN, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.SHOCK_RIFLE, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.ROCKET_LAUNCHER, true);
@@ -266,10 +292,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);        
     }
-    
-    /*
-    * Change the default weapon preferences
-    */
+   
     public void defineWeaponPrefsTunnelShortRange(UT2004Bot bot) {
         weaponPrefs.addGeneralPref(UT2004ItemType.FLAK_CANNON, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.MINIGUN, true);
@@ -280,9 +303,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);        
     }
-    /*
-    * Change the default weapon preferences
-    */
+    
     public void defineWeaponPrefsOpenFieldShortRange(UT2004Bot bot) {
         weaponPrefs.addGeneralPref(UT2004ItemType.ROCKET_LAUNCHER, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.FLAK_CANNON, true);
@@ -292,7 +313,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponPrefs.addGeneralPref(UT2004ItemType.SHOCK_RIFLE, false);
         weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
         weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);
-    }
+    }*/
     
     private void sayGlobal(String msg) {
     	// Simple way to send msg into the UT2004 chat
@@ -331,11 +352,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         getAct().act(new RemoveRay("All"));
 
         // 2. create new rays
-        raycasting.createRay(FRONT,   new Vector3d(1, 0, 0), rayLength, fastTrace, floorCorrection, traceActor);
+       // raycasting.createRay(FRONT,   new Vector3d(1, 0, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(LEFTBAS,  new Vector3d(0, -1, -0.3), rayBasLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHTBAS, new Vector3d(0, 1, -0.3), rayBasLength, fastTrace, floorCorrection, traceActor);
-        raycasting.createRay(LEFT90,  new Vector3d(0, -1, 0), rayLength, fastTrace, floorCorrection, traceActor);
-        raycasting.createRay(RIGHT90, new Vector3d(0, 1, 0), rayLength, fastTrace, floorCorrection, traceActor);
+        //raycasting.createRay(LEFT90,  new Vector3d(0, -1, 0), rayLength, fastTrace, floorCorrection, traceActor);
+        //raycasting.createRay(RIGHT90, new Vector3d(0, 1, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(LEFTSHORT,  new Vector3d(0, -1, 0), rayShortLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHTSHORT, new Vector3d(0, 1, 0), rayShortLength, fastTrace, floorCorrection, traceActor);
         // register listener called when all rays are set up in the UT engine
@@ -344,12 +365,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 // once all rays were initialized store the AutoTraceRay objects
                 // that will come in response in local variables, it is just
                 // for convenience
-                front = raycasting.getRay(FRONT);
+                //front = raycasting.getRay(FRONT);
                 leftbas = raycasting.getRay(LEFTBAS);
-                left90 = raycasting.getRay(LEFT90);
+                //left90 = raycasting.getRay(LEFT90);
                 leftshort = raycasting.getRay(LEFTSHORT);
                 rightbas = raycasting.getRay(RIGHTBAS);
-                right90 = raycasting.getRay(RIGHT90);
+                //right90 = raycasting.getRay(RIGHT90);
                 rightshort = raycasting.getRay(RIGHTSHORT);
                 //frontHaut = raycasting.getRay(FRONTHAUT);
             }
@@ -476,11 +497,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         if (!raycasting.getAllRaysInitialized().getFlag()) {
             return;
         }
-        sensorFront = front.isResult();
+        //sensorFront = front.isResult();
         sensorLeftBas = leftbas.isResult();
         sensorRightBas = rightbas.isResult();
-        sensorLeft90 = left90.isResult();
-        sensorRight90 = right90.isResult();
+        //sensorLeft90 = left90.isResult();
+        //sensorRight90 = right90.isResult();
         sensorLeftShort = leftshort.isResult();
         sensorRightShort = rightshort.isResult();
 
@@ -504,8 +525,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             runningToPlayer = false;
         } else {
         	// 2) or shoot on enemy if it is visible
-                distance = info.getLocation().getDistance(enemy.getLocation());
-                if (distance > 850) {
+                /*if (distance > 850) {
                         //sayGlobal("Adversaire �loign�");
                         defineWeaponPrefsLongRange(bot);
                         
@@ -517,7 +537,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         //sayGlobal("Terrain ouvert, adversaire proche");
                         defineWeaponPrefsOpenFieldShortRange(bot);
                     }
-                }
+                }*/
                 
                 if (shoot.shoot(weaponPrefs, enemy) != null) {
                     log.info("Shooting at enemy!!!");
@@ -525,6 +545,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
         }
         
+        distance = info.getLocation().getDistance(enemy.getLocation());
         if (enemy.isVisible() && distance < 1200) {
             float rand1 = random.nextFloat() ;
             float rand2 = random.nextFloat() ;
