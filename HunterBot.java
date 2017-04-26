@@ -27,6 +27,7 @@ import cz.cuni.amis.pogamut.ut2004.bot.impl.UT2004Bot;
 import cz.cuni.amis.pogamut.ut2004.bot.impl.UT2004BotModuleController;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.ItemType;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.UT2004ItemType;
+import cz.cuni.amis.pogamut.ut2004.communication.messages.gbcommands.AddInventory;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbcommands.Configuration;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbcommands.Initialize;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbcommands.Move;
@@ -39,6 +40,7 @@ import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.BotDama
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.BotKilled;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.ConfigChange;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.GameInfo;
+import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.IncomingProjectile;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.InitedMessage;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.Item;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.NavPoint;
@@ -331,7 +333,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public Initialize getInitializeCommand() {
         // just set the name of the bot and his skill level, 1 is the lowest, 7 is the highest
     	// skill level affects how well will the bot aim
-        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(4);
+        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(5);
     }
 
     @Override
@@ -532,25 +534,35 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
             runningToPlayer = false;
         } else {
-        	// 2) or shoot on enemy if it is visible
-                /*if (distance > 850) {
-                        //sayGlobal("Adversaire �loign�");
-                        defineWeaponPrefsLongRange(bot);
-                        
-                } else {
-                    if (sensorLeft90 && sensorRight90) {
-                        //sayGlobal("Tunnel, adversaire proche");
-                        defineWeaponPrefsTunnelShortRange(bot);
-                    } else {
-                        //sayGlobal("Terrain ouvert, adversaire proche");
-                        defineWeaponPrefsOpenFieldShortRange(bot);
-                    }
-                }*/
-                
+            // 2) or shoot on enemy if it is visible
+            
+            //Donne au bot le shock rifle et des munitions, a supprimer
+            if (!weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE)) {
+    		log.info("Getting WEAPON");
+    		getAct().act(new AddInventory().setType(UT2004ItemType.SHOCK_RIFLE.getName()));
+            }
+            if (!weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE)) {
+                    log.info("Getting AMMO");
+                    getAct().act(new AddInventory().setType(UT2004ItemType.SHOCK_RIFLE_AMMO.getName())); 	
+            }
+            weaponry.changeWeapon(UT2004ItemType.SHOCK_RIFLE);
+            
+            // try shock combo if the shock rifle is the current weapon
+            if (distance > 800 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
+                shoot.shootSecondary(enemy);
+                if (seeIncomingProjectile()) {
+                    log.info("Shooting PROJECTILE");
+                    IncomingProjectile proj = pickProjectile();
+                    shoot.shoot(proj.getId());
+                }
+                move.turnTo(enemy);
+            // tir normal
+            } else {
                 if (shoot.shoot(weaponPrefs, enemy) != null) {
                     log.info("Shooting at enemy!!!");
                     shooting = true;
                 }
+            }
         }
         
         distance = info.getLocation().getDistance(enemy.getLocation());
@@ -752,6 +764,17 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     @Override
     public void botKilled(BotKilled event) {
     	reset();
+    }
+    
+    private boolean seeIncomingProjectile() {
+    	for (IncomingProjectile proj : world.getAll(IncomingProjectile.class).values()) {
+    		if (proj.isVisible()) return true;
+    	}
+        return false;
+    }
+    
+    private IncomingProjectile pickProjectile() {
+            return DistanceUtils.getNearest(world.getAll(IncomingProjectile.class).values(), info.getLocation());
     }
     
     ///////////////////////////////////
