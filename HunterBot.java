@@ -43,6 +43,7 @@ import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.GameInf
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.IncomingProjectile;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.InitedMessage;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.Item;
+import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.ItemPickedUp;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.NavPoint;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.Player;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.PlayerDamaged;
@@ -176,6 +177,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      */
     @JProp
     public int deaths = 0;
+    
+    /* Liste intelligente d'armes a preferer pour le bot */
+    private WeaponList weaponsPriority;
 
     /**
      * {@link PlayerKilled} listener that provides "frag" counting + is switches
@@ -194,6 +198,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         if (enemy.getId().equals(event.getId())) {
             enemy = null;
         }
+         /* maj des probabilites d'efficacite d'une arme */
+        weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), true);
     }
     /**
      * Used internally to maintain the information about the bot we're currently
@@ -244,6 +250,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             }
         });
+        
+                
+        /* initialisation de la liste de preference d'armes */
+        weaponsPriority = new WeaponList();
+
 
         // FIRST we DEFINE GENERAL WEAPON PREFERENCES
         weaponPrefs.addGeneralPref(UT2004ItemType.MINIGUN, false);
@@ -389,6 +400,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         // without ".setAutoTrace(true)" the AddRay command would be useless as the bot won't get
         // trace-lines feature activated
         getAct().act(new Configuration().setDrawTraceLines(true).setAutoTrace(true));
+        
+        
+         /* ajout des armes de bases dans la liste*/
+        for (Item weapon : items.getAllItems(ItemType.Category.WEAPON).values()) {
+            weaponsPriority.addWeapon(weapon.getType());
+        }
     }
         
     
@@ -419,6 +436,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
            log.info("World damage " + event.getDamageType() + "[" + event.getDamage() + "]");
        }
     }
+    
+    /* listener active lorsque le bot ramasse un item */ 
+    @EventListener(eventClass=ItemPickedUp.class)
+    public void itemPickedUp(ItemPickedUp event) {
+        
+    }
 
     /**
      * Main method that controls the bot - makes decisions what to do next. It
@@ -432,6 +455,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     @Override
     public void logic() {
 
+        /*CHANGEMENT D'ARMES + CHECKER MUNITIONS PTETRE */
+        
         if (info.getHealth() < criticalHealthLevel) {
             if (info.isShooting() || info.isSecondaryShooting()) {
                 getAct().act(new StopShooting());
@@ -439,6 +464,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             this.stateMedKit();
             return;
         }
+        
+        
         
         // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
         if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
@@ -558,7 +585,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 move.turnTo(enemy);
             // tir normal
             } else {
-                if (shoot.shoot(weaponPrefs, enemy) != null) {
+               // if (shoot.shoot(weaponPrefs, enemy) != null) {
+                if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy)) { // A CHECKER LE BOOLEEN 
                     log.info("Shooting at enemy!!!");
                     shooting = true;
                 }
@@ -764,6 +792,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     @Override
     public void botKilled(BotKilled event) {
     	reset();
+        /* maj des probabilites d'efficacite d'une arme */
+        weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), false);
     }
     
     private boolean seeIncomingProjectile() {
@@ -802,4 +832,3 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
-

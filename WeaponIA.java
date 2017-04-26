@@ -27,16 +27,16 @@ public class WeaponIA implements Comparable<WeaponIA> {
     /* Type de l'arme concernee */
     private final ItemType weapon;
     /* probabilite d'efficacite de l'arme dans un combat */
-    private float probaEfficiency;
+    private double probaEfficiency;
     /* poids de l'arme */
-    private int weight;
+    private double weight;
     /* nombre de combats gagnés avec l'arme */
     private int nbVictory;
     /*nombre de combats perdus avec l'arme */
     private int nbDefeat;
     
     /* Constructeur */
-    public WeaponIA (ItemType weapon, float probaEfficiency, int weight) {
+    public WeaponIA (ItemType weapon, double probaEfficiency, double weight) {
         this.weapon = weapon;
         this.probaEfficiency = probaEfficiency;
         this.weight = weight;
@@ -44,19 +44,19 @@ public class WeaponIA implements Comparable<WeaponIA> {
         this.nbDefeat = 0;
     }
     
-    public float getProba () {
+    public double getProba () {
         return this.probaEfficiency;
     }
     
-    public int getWeight () {
+    public double getWeight () {
         return this.weight;
     }
     
-    public void setProba (float nProba) {
+    public void setProba (double nProba) {
         this.probaEfficiency = nProba;
     }
     
-    public void setWeight (int nWeight) {
+    public void setWeight (double nWeight) {
         this.weight = nWeight;
     }
     
