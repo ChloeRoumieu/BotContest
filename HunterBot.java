@@ -537,18 +537,18 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             // 2) or shoot on enemy if it is visible
             
             //Donne au bot le shock rifle et des munitions, a supprimer
-            if (!weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE)) {
-    		log.info("Getting WEAPON");
-    		getAct().act(new AddInventory().setType(UT2004ItemType.SHOCK_RIFLE.getName()));
+            /*if (!weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE)) {
+            log.info("Getting WEAPON");
+            getAct().act(new AddInventory().setType(UT2004ItemType.SHOCK_RIFLE.getName()));
             }
             if (!weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE)) {
-                    log.info("Getting AMMO");
-                    getAct().act(new AddInventory().setType(UT2004ItemType.SHOCK_RIFLE_AMMO.getName())); 	
+            log.info("Getting AMMO");
+            getAct().act(new AddInventory().setType(UT2004ItemType.SHOCK_RIFLE_AMMO.getName()));
             }
-            weaponry.changeWeapon(UT2004ItemType.SHOCK_RIFLE);
+            weaponry.changeWeapon(UT2004ItemType.SHOCK_RIFLE);*/
             
             // try shock combo if the shock rifle is the current weapon
-            if (distance > 800 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
+            if (distance > 1000 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
                 shoot.shootSecondary(enemy);
                 if (seeIncomingProjectile()) {
                     log.info("Shooting PROJECTILE");
