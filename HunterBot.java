@@ -673,20 +673,16 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             }
         }
-        if (enemy.isVisible() && distance >= 1200 && weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER) && weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.ROCKET_LAUNCHER)) {
-            shoot.shootSecondary(enemy);
-                if (seeIncomingProjectile()) {
-                    log.info("Shooting PROJECTILE");
-                    IncomingProjectile proj = pickProjectile();
-                    shoot.shoot(proj.getId());
-                }
-                move.turnTo(enemy);
+        if (enemy.isVisible() && distance >= 1200) {
+            move.turnTo(enemy);
         } else {
+            Item item;
             if (info.getHealth() < 100) {
-                move.moveTo(items.getPathNearestSpawnedItem(ItemType.Category.HEALTH));
+                item = items.getPathNearestSpawnedItem(ItemType.Category.HEALTH);
             } else {
-                move.moveTo(items.getPathNearestSpawnedItem(ItemType.Category.ADRENALINE));
+                item = items.getPathNearestSpawnedItem(ItemType.Category.ADRENALINE);               
             }
+                stateRunAroundItems();
         }
 	    
         //if (bot.getVelocity().isZero()){
