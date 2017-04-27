@@ -673,31 +673,26 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             }
         }
-        if (enemy.isVisible() && distance >= 1200) {
-            move.turnTo(enemy);
-        } else {
-            Item item;
-            if (info.getHealth() < 100) {
-                item = items.getPathNearestSpawnedItem(ItemType.Category.HEALTH);
-            } else {
-                item = items.getPathNearestSpawnedItem(ItemType.Category.ADRENALINE);               
-            }
-                stateRunAroundItems();
-        }
-	    
-        //if (bot.getVelocity().isZero()){
-          //  move.doubleJump();
-        //}
+        /*if (bot.getVelocity().isZero()){
+        move.doubleJump();
+        }*/
         move.turnTo(enemy);
+        if (enemy.isVisible() && distance >= 1200 ) {
+            move.turnTo(enemy);
+            navigation.navigate(enemy);
+            runningToPlayer = true;
+        } 
+        
 
         // 3) if enemy is far or not visible - run to him
-        int decentDistance = Math.round(random.nextFloat() * 800);
+        //int decentDistance = Math.round(random.nextFloat() * 800);
+        int decentDistance = 1000 ;
         distance = info.getLocation().getDistance(enemy.getLocation());
         if (!enemy.isVisible() || !shooting || decentDistance < distance) {
-            if (!runningToPlayer) {
+            //if (!runningToPlayer) {
                 navigation.navigate(enemy);
                 runningToPlayer = true;
-            }
+            //}
         } else {
             runningToPlayer = false;
             navigation.stopNavigation();
