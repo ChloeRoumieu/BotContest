@@ -431,7 +431,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
            log.info("I have just been hurt by other bot for: " + event.getDamageType() + "[" + event.getDamage() + "]");
        }
        if (event.isCausedByWorld()){
-           move.doubleJump();
+           if (info.isShooting() || info.isSecondaryShooting()) {
+                // stop shooting
+                getAct().act(new StopShooting());
+           }
+           //move.doubleJump();
            stateMedKit();
            log.info("World damage " + event.getDamageType() + "[" + event.getDamage() + "]");
        }
@@ -649,9 +653,23 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             }
         }
-        if (bot.getVelocity().isZero()){
-            move.doubleJump();
+	    
+        if (distance >= 1200 && weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER) && weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.ROCKET_LAUNCHER)) {
+            shoot.shootSecondary(enemy);
+                if (seeIncomingProjectile()) {
+                    log.info("Shooting PROJECTILE");
+                    IncomingProjectile proj = pickProjectile();
+                    shoot.shoot(proj.getId());
+                }
+                move.turnTo(enemy);
+        } else {
+            move.moveTo(enemy);
         }
+	    
+        //if (bot.getVelocity().isZero()){
+          //  move.doubleJump();
+        //}
+	    
         move.turnTo(enemy);
 
         // 3) if enemy is far or not visible - run to him
