@@ -597,7 +597,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             } else {
                 // try shock combo if the shock rifle is the current weapon
-                if (distance > 1000 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
+                if (distance > 800 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
                     shoot.shootSecondary(enemy);
                     if (seeIncomingProjectile()) {
                         log.info("Shooting PROJECTILE");
@@ -673,31 +673,26 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             }
         }
-        /*if (bot.getVelocity().isZero()){
-        move.doubleJump();
-        }*/
         move.turnTo(enemy);
-        if (enemy.isVisible() && distance >= 1200 ) {
-            move.turnTo(enemy);
-            navigation.navigate(enemy);
+        if (bot.getVelocity().isPlanarZero()){
+            move.moveTo(enemy);
             runningToPlayer = true;
-        } 
-        
+        }
 
         // 3) if enemy is far or not visible - run to him
         //int decentDistance = Math.round(random.nextFloat() * 800);
-        int decentDistance = 1000 ;
+        int decentDistance = 1200 ;
         distance = info.getLocation().getDistance(enemy.getLocation());
-        if (!enemy.isVisible() || !shooting || decentDistance < distance) {
-            //if (!runningToPlayer) {
+        if (!enemy.isVisible() || !shooting || decentDistance < distance) { 
+            if (!runningToPlayer) {
                 navigation.navigate(enemy);
                 runningToPlayer = true;
-            //}
-        } else {
+                
+            }
+        } /*else {
             runningToPlayer = false;
             navigation.stopNavigation();
-        }
-        
+        }*/
         item = null;
     }
 
