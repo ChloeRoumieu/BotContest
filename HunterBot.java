@@ -435,7 +435,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 // stop shooting
                 getAct().act(new StopShooting());
            }
-           //move.doubleJump();
+           move.doubleJump();
            stateMedKit();
            log.info("World damage " + event.getDamageType() + "[" + event.getDamage() + "]");
        }
@@ -578,23 +578,43 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
             weaponry.changeWeapon(UT2004ItemType.SHOCK_RIFLE);*/
             
-            // try shock combo if the shock rifle is the current weapon
-            if (distance > 1000 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
-                shoot.shootSecondary(enemy);
-                if (seeIncomingProjectile()) {
-                    log.info("Shooting PROJECTILE");
-                    IncomingProjectile proj = pickProjectile();
-                    shoot.shoot(proj.getId());
-                }
-                move.turnTo(enemy);
-            // tir normal
-            } else {
-               // if (shoot.shoot(weaponPrefs, enemy) != null) {
-                if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy)) { // A CHECKER LE BOOLEEN 
-                    log.info("Shooting at enemy!!!");
+            //Donne au bot le lance rocket et des munitions, a supprimer
+            /*if (!weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER)) {
+            log.info("Getting WEAPON");
+            getAct().act(new AddInventory().setType(UT2004ItemType.ROCKET_LAUNCHER.getName()));
+            }
+            if (!weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER)) {
+            log.info("Getting AMMO");
+            getAct().act(new AddInventory().setType(UT2004ItemType.ROCKET_LAUNCHER_AMMO.getName()));
+            }
+            weaponry.changeWeapon(UT2004ItemType.ROCKET_LAUNCHER);*/
+            
+            //Tir dans les pieds si le lance rocket est current weapon
+            if (weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER) && weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.ROCKET_LAUNCHER)) {
+                if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy.getLocation().addZ(-50))) { 
+                    log.info("Shooting rockets at enemy's feet");
                     shooting = true;
                 }
-            }
+            } else {
+                // try shock combo if the shock rifle is the current weapon
+                if (distance > 1000 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
+                    shoot.shootSecondary(enemy);
+                    if (seeIncomingProjectile()) {
+                        log.info("Shooting PROJECTILE");
+                        IncomingProjectile proj = pickProjectile();
+                        shoot.shoot(proj.getId());
+                    }
+                    move.turnTo(enemy);
+                    shooting = true;
+                // tir normal
+                } else {
+                   // if (shoot.shoot(weaponPrefs, enemy) != null) {
+                    if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy)) { // A CHECKER LE BOOLEEN 
+                        log.info("Shooting at enemy!!!");
+                        shooting = true;
+                    }
+                }
+            }   
         }
         
         distance = info.getLocation().getDistance(enemy.getLocation());
@@ -653,7 +673,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             }
         }
-	    
         if (enemy.isVisible() && distance >= 1200 && weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER) && weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.ROCKET_LAUNCHER)) {
             shoot.shootSecondary(enemy);
                 if (seeIncomingProjectile()) {
@@ -673,7 +692,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         //if (bot.getVelocity().isZero()){
           //  move.doubleJump();
         //}
-	    
         move.turnTo(enemy);
 
         // 3) if enemy is far or not visible - run to him
