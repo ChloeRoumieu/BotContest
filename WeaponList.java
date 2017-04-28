@@ -21,6 +21,7 @@ import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.Weapon;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.ItemType;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.UT2004ItemType;
 import cz.cuni.amis.pogamut.ut2004.communication.messages.gbinfomessages.Item;
+import cz.cuni.amis.utils.collections.MyCollections;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -122,7 +123,15 @@ public class WeaponList {
         return false;
     }
     
-    private List<ItemType> listeOwnedWeaponSorted (Collection<ItemType> ownedWeapons) {
+    private List<ItemType> weaponListToItemTypeList (Collection<Weapon> lWeapon) {
+        List<ItemType> lItemType = new ArrayList<ItemType>();
+        for (Weapon w : lWeapon) {
+            lItemType.add(w.getType());
+        }
+        return lItemType;
+    }
+    
+    public List<ItemType> listeOwnedWeaponSorted (List<ItemType> ownedWeapons) {
         List<ItemType> listOk = new ArrayList<ItemType>();
         for (WeaponIA w : weaponsList) {
             if (ownedWeapons.contains(w.getTypeWeapon()))
@@ -133,8 +142,8 @@ public class WeaponList {
     }
     
     /* simule le choix du joueur pour la prochaine arme qu'il utilisera */
-    public ItemType getNextWeapon (Collection<ItemType> ownedWeapons) {
-        List<ItemType> weaponListSorted = listeOwnedWeaponSorted(ownedWeapons);
+    public ItemType getNextWeapon (Collection<Weapon> ownedWeapons) {
+        List<ItemType> weaponListSorted = listeOwnedWeaponSorted(weaponListToItemTypeList(ownedWeapons));
         if (Math.random() <= epsilon)
             return getBestWeapon(weaponListSorted);
         else
@@ -148,7 +157,7 @@ public class WeaponList {
     
     /* retourne une arme de la liste aleatoirement */
     public ItemType getRandomWeapon(List <ItemType> weaponListSorted) {
-        return weaponListSorted.get(rand.nextInt(weaponsList.size()));
+        return weaponListSorted.get(rand.nextInt(weaponListSorted.size()));
     }
     
     //TEST A SUPPRIMER

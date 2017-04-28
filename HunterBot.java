@@ -200,6 +200,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         }
          /* maj des probabilites d'efficacite d'une arme */
         weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), true);
+        
+        /* ajout de la meilleure arme a weaponPref */
+        weaponPrefs.addGeneralPref(weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().values()), true);
+        
+        //test
+        log.info("Liste !! " + weaponsPriority.afficherListe());
     }
     /**
      * Used internally to maintain the information about the bot we're currently
@@ -406,6 +412,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         for (Item weapon : items.getAllItems(ItemType.Category.WEAPON).values()) {
             weaponsPriority.addWeapon(weapon.getType());
         }
+        weaponsPriority.addWeapon(UT2004ItemType.ASSAULT_RIFLE);
+        weaponsPriority.addWeapon(UT2004ItemType.SHIELD_GUN);
     }
         
     
@@ -608,8 +616,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                     shooting = true;
                 // tir normal
                 } else {
-                   // if (shoot.shoot(weaponPrefs, enemy) != null) {
-                    if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy)) { // A CHECKER LE BOOLEEN 
+                    if (shoot.shoot(weaponPrefs, enemy) != null) {
+                   // if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy)) { // A CHECKER LE BOOLEEN 
                         log.info("Shooting at enemy!!!");
                         shooting = true;
                     }
@@ -820,6 +828,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     	reset();
         /* maj des probabilites d'efficacite d'une arme */
         weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), false);
+        
+        
+        //test
+        log.info("Liste !! " + weaponsPriority.afficherListe());
     }
     
     private boolean seeIncomingProjectile() {
@@ -855,6 +867,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
     }
 }
