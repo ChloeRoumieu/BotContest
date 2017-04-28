@@ -208,7 +208,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         }
         
         //test
-        log.info("Liste !! " + weaponsPriority.afficherListe());
+        log.info(weaponsPriority.afficherListe());
     }
     /**
      * Used internally to maintain the information about the bot we're currently
