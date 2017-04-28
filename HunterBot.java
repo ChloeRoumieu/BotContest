@@ -573,14 +573,16 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             } else {
                 // try shock combo if the shock rifle is the current weapon
-                if (distance > 800 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
+                if (distance > 600 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
+                    move.turnTo(enemy);
                     shoot.shootSecondary(enemy);
                     if (seeIncomingProjectile()) {
-                        log.info("Shooting PROJECTILE");
                         IncomingProjectile proj = pickProjectile();
-                        shoot.shoot(proj.getId());
+                        if (proj.getType().equals("XWeapons.ShockProjectile")){
+                            log.info("Shooting PROJECTILE");
+                            shoot.shoot(proj.getId());
+                        }
                     }
-                    move.turnTo(enemy);
                     shooting = true;
                 // tir normal
                 } else {
@@ -649,7 +651,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 }
             }
         }
-        move.turnTo(enemy);
+        //move.turnTo(enemy);
         if (bot.getVelocity().isPlanarZero()){
             move.moveTo(enemy);
             runningToPlayer = true;
