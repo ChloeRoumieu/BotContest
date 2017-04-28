@@ -123,6 +123,7 @@ public class WeaponList {
         return false;
     }
     
+    /* transforme une collection de weapon en une liste d'ItemType */
     private List<ItemType> weaponListToItemTypeList (Collection<Weapon> lWeapon) {
         List<ItemType> lItemType = new ArrayList<ItemType>();
         for (Weapon w : lWeapon) {
@@ -131,6 +132,7 @@ public class WeaponList {
         return lItemType;
     }
     
+    /* renvoit la weaponsList sans les armes qui n'appartiennent pas a la liste ownedWeapons */
     public List<ItemType> listeOwnedWeaponSorted (List<ItemType> ownedWeapons) {
         List<ItemType> listOk = new ArrayList<ItemType>();
         for (WeaponIA w : weaponsList) {

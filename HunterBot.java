@@ -201,9 +201,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
          /* maj des probabilites d'efficacite d'une arme */
         weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), true);
         
-        /* ajout de la meilleure arme a weaponPref */
+        /* ajout d'arme voulue a weaponPref pour que le bot l'utilise en priorite */
         if (weaponry.getLoadedWeapons().keySet() != null) {
-                weaponPrefs.addGeneralPref(weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().keySet()), true);
+                weaponPrefs.addGeneralPref(weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().values()), true);
         }
         
         //test
