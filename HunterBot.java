@@ -202,8 +202,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), true);
         
         /* ajout d'arme voulue a weaponPref pour que le bot l'utilise en priorite */
-        if (weaponry.getLoadedWeapons().keySet() != null) {
-                weaponPrefs.addGeneralPref(weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().values()), true);
+        if (weaponry.getLoadedWeapons().values() != null) {
+            WeaponIA newWeapon = weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().values());
+            weaponPrefs.addGeneralPref(newWeapon.getTypeWeapon(), newWeapon.getPrimary());
         }
         
         //test
@@ -432,8 +433,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      */
     @Override
     public void logic() {
-
-        /*CHANGEMENT D'ARMES + CHECKER MUNITIONS PTETRE */
         
         if (info.getHealth() < criticalHealthLevel) {
             if (info.isShooting() || info.isSecondaryShooting()) {
@@ -816,9 +815,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         /* maj des probabilites d'efficacite d'une arme */
         weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), false);
         
-        
-        //test
-        log.info("Liste !! " + weaponsPriority.afficherListe());
     }
     
     private boolean seeIncomingProjectile() {

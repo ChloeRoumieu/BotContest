@@ -73,23 +73,23 @@ public class WeaponList {
     }
     
     /* retourne les poids initiaux pour chaque arme, poids choisis arbitrairement par les developpeurs */
-    public final double weightInitialWeapon (ItemType typeWeapon) {
+    public final int weightInitialWeapon (ItemType typeWeapon) {
        if ((typeWeapon == UT2004ItemType.ASSAULT_RIFLE)|| (typeWeapon == UT2004ItemType.BIO_RIFLE))
-           return 0.9;
+           return 100;
        if (typeWeapon == UT2004ItemType.SNIPER_RIFLE)
-           return 0.7;
+           return 70;
        if (typeWeapon == UT2004ItemType.LINK_GUN)
-           return 0.3;
+           return 30;
        if ((typeWeapon == UT2004ItemType.SHOCK_RIFLE)||(typeWeapon == UT2004ItemType.FLAK_CANNON))
-           return 0.2;
+           return 20;
        if (typeWeapon == UT2004ItemType.ROCKET_LAUNCHER)
-           return 0.1;
+           return 10;
        if (typeWeapon == UT2004ItemType.TRANSLOCATOR)
-           return 0.7;
+           return 60;
        if ((typeWeapon == UT2004ItemType.LIGHTNING_GUN) ||(typeWeapon == UT2004ItemType.MINIGUN))
-           return 0.5;
+           return 50;
        
-       return 0.5;
+       return 50;
     }
     
     /* retourne vrai si l'arme weapon appartient déjà à la liste, faux sinon */
@@ -106,8 +106,12 @@ public class WeaponList {
             return false;
         
         double probaInit = probaInitialeWeapon(weapon);
-        WeaponIA newWeapon = new WeaponIA (weapon, probaInit, weightInitialWeapon(weapon));
-        weaponsList.add(newWeapon);
+        int weightInit = weightInitialWeapon(weapon);
+        WeaponIA newWeaponPrimary = new WeaponIA (weapon, probaInit, weightInit, true);
+        WeaponIA newWeaponSecondary = new WeaponIA (weapon, probaInit, weightInit, false);
+        
+        weaponsList.add(newWeaponPrimary);
+        weaponsList.add(newWeaponSecondary);
         Collections.sort(weaponsList);
         return true;
     }
@@ -133,19 +137,29 @@ public class WeaponList {
     }
     
     /* renvoit la weaponsList sans les armes qui n'appartiennent pas a la liste ownedWeapons */
-    public List<ItemType> listeOwnedWeaponSorted (List<ItemType> ownedWeapons) {
-        List<ItemType> listOk = new ArrayList<ItemType>();
+//    public List<ItemType> listeOwnedWeaponSorted (List<ItemType> ownedWeapons) {
+//        List<ItemType> listOk = new ArrayList<ItemType>();
+//        for (WeaponIA w : weaponsList) {
+//            if (ownedWeapons.contains(w.getTypeWeapon()))
+//                listOk.add(w.getTypeWeapon());
+//        }
+//        return listOk;
+//        
+//    }
+    public List<WeaponIA> listeOwnedWeaponSorted (List<ItemType> ownedWeapons) {
+        List<WeaponIA> listOk = new ArrayList<WeaponIA>();
         for (WeaponIA w : weaponsList) {
             if (ownedWeapons.contains(w.getTypeWeapon()))
-                listOk.add(w.getTypeWeapon());
+                listOk.add(w);
         }
         return listOk;
         
     }
     
-    /* simule le choix du joueur pour la prochaine arme qu'il utilisera */
-    public ItemType getNextWeapon (Collection<Weapon> ownedWeapons) {
-        List<ItemType> weaponListSorted = listeOwnedWeaponSorted(weaponListToItemTypeList(ownedWeapons));
+    
+    /* simule le choix du joueur pour la prochaine arme qu'il utilisera. ownedWeapon = armes possedees par le joueur */
+    public WeaponIA getNextWeapon (Collection<Weapon> ownedWeapons) {
+        List<WeaponIA> weaponListSorted = listeOwnedWeaponSorted(weaponListToItemTypeList(ownedWeapons));
         if (Math.random() <= epsilon)
             return getBestWeapon(weaponListSorted);
         else
@@ -153,14 +167,21 @@ public class WeaponList {
     }
     
     /* retourne l'arme ayant la probabilite d'efficacite la plus elevee */
-    public ItemType getBestWeapon (List <ItemType> weaponListSorted) {
+//    public ItemType getBestWeapon (List <ItemType> weaponListSorted) {
+//        return weaponListSorted.get(0);
+//    }
+    public WeaponIA getBestWeapon (List <WeaponIA> weaponListSorted) {
         return weaponListSorted.get(0);
     }
     
     /* retourne une arme de la liste aleatoirement */
-    public ItemType getRandomWeapon(List <ItemType> weaponListSorted) {
+//    public ItemType getRandomWeapon(List <ItemType> weaponListSorted) {
+//        return weaponListSorted.get(rand.nextInt(weaponListSorted.size()));
+//    }
+    
+      public WeaponIA getRandomWeapon(List <WeaponIA> weaponListSorted) {
         return weaponListSorted.get(rand.nextInt(weaponListSorted.size()));
-    }
+     }
     
     //TEST A SUPPRIMER
     public String afficherListe () {

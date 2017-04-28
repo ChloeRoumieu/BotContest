@@ -29,26 +29,33 @@ public class WeaponIA implements Comparable<WeaponIA> {
     /* probabilite d'efficacite de l'arme dans un combat */
     private double probaEfficiency;
     /* poids de l'arme */
-    private double weight;
+    private int weight;
     /* nombre de combats gagnés avec l'arme */
     private int nbVictory;
     /*nombre de combats perdus avec l'arme */
     private int nbDefeat;
+    /* Tir primaire ou secondaire */
+    private final boolean primaryShoot;
     
     /* Constructeur */
-    public WeaponIA (ItemType weapon, double probaEfficiency, double weight) {
+    public WeaponIA (ItemType weapon, double probaEfficiency, int weight, boolean primaryShoot) {
         this.weapon = weapon;
         this.probaEfficiency = probaEfficiency;
         this.weight = weight;
         this.nbVictory = 0;
         this.nbDefeat = 0;
+        this.primaryShoot = primaryShoot;
+    }
+    
+    public boolean getPrimary () {
+        return primaryShoot;
     }
     
     public double getProba () {
         return this.probaEfficiency;
     }
     
-    public double getWeight () {
+    public int getWeight () {
         return this.weight;
     }
     
@@ -56,7 +63,7 @@ public class WeaponIA implements Comparable<WeaponIA> {
         this.probaEfficiency = nProba;
     }
     
-    public void setWeight (double nWeight) {
+    public void setWeight (int nWeight) {
         this.weight = nWeight;
     }
     
@@ -73,11 +80,16 @@ public class WeaponIA implements Comparable<WeaponIA> {
     }
 
     @Override
-    public int compareTo(WeaponIA o) {
-        WeaponIA toComp = (WeaponIA) o;
+    public int compareTo(WeaponIA toComp) {
         int diff = (int) ((int) (toComp.getProba()*100) - (this.probaEfficiency*100));
-        if (diff == 0)
-           return (toComp.getTypeWeapon().compareTo(this.weapon));
+        if (diff == 0) {
+            if (toComp.getTypeWeapon().equals(this.weapon)) {
+                if (toComp.getPrimary()) return 1;
+                else return -1;
+            }
+            else
+                return toComp.getTypeWeapon().compareTo(this.weapon);
+        }
         else
            return diff;
     }
