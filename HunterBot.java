@@ -202,7 +202,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), true);
         
         /* ajout de la meilleure arme a weaponPref */
-        weaponPrefs.addGeneralPref(weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().keySet()), true);
+        if (weaponry.getLoadedWeapons().keySet() != null) {
+                weaponPrefs.addGeneralPref(weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().keySet()), true);
+        }
         
         //test
         log.info("Liste !! " + weaponsPriority.afficherListe());
@@ -852,6 +854,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
     }
 }
