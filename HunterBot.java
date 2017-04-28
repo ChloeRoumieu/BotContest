@@ -202,7 +202,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), true);
         
         /* ajout de la meilleure arme a weaponPref */
-        weaponPrefs.addGeneralPref(weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().values()), true);
+        weaponPrefs.addGeneralPref(weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().keySet()), true);
         
         //test
         log.info("Liste !! " + weaponsPriority.afficherListe());
@@ -297,42 +297,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 .add(UT2004ItemType.LIGHTNING_GUN, true)
                 .add(UT2004ItemType.SHOCK_RIFLE, true); 
     }
-    
-    /*
-    * Change the default weapon preferences
-    */
-    /*public void defineWeaponPrefsLongRange(UT2004Bot bot) {
-        weaponPrefs.addGeneralPref(UT2004ItemType.LIGHTNING_GUN, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.SHOCK_RIFLE, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.ROCKET_LAUNCHER, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.MINIGUN, false);
-        weaponPrefs.addGeneralPref(UT2004ItemType.FLAK_CANNON, false);
-        weaponPrefs.addGeneralPref(UT2004ItemType.LINK_GUN, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);        
-    }
-   
-    public void defineWeaponPrefsTunnelShortRange(UT2004Bot bot) {
-        weaponPrefs.addGeneralPref(UT2004ItemType.FLAK_CANNON, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.MINIGUN, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.LINK_GUN, false);
-        weaponPrefs.addGeneralPref(UT2004ItemType.SHOCK_RIFLE, false);
-        weaponPrefs.addGeneralPref(UT2004ItemType.LIGHTNING_GUN, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.ROCKET_LAUNCHER, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);        
-    }
-    
-    public void defineWeaponPrefsOpenFieldShortRange(UT2004Bot bot) {
-        weaponPrefs.addGeneralPref(UT2004ItemType.ROCKET_LAUNCHER, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.FLAK_CANNON, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.LINK_GUN, false);
-        weaponPrefs.addGeneralPref(UT2004ItemType.MINIGUN, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.LIGHTNING_GUN, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.SHOCK_RIFLE, false);
-        weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
-        weaponPrefs.addGeneralPref(UT2004ItemType.ASSAULT_RIFLE, true);
-    }*/
     
     private void sayGlobal(String msg) {
     	// Simple way to send msg into the UT2004 chat
@@ -477,7 +441,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             return;
         }
         
-        
+        if (!hasDecentWeapon()){
+            stateRunAroundItems() ;
+            return ;
+        }
         
         // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
         if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
@@ -768,6 +735,24 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 || this.weaponry.hasWeapon(UT2004ItemType.LINK_GUN) || this.weaponry.hasWeapon(UT2004ItemType.MINIGUN) || this.weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER)
                 || this.weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE));
     }
+	
+	protected boolean hasDecentAmmo(){
+        if(weaponry.hasWeapon(UT2004ItemType.BIO_RIFLE) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.BIO_RIFLE))
+            return true ;
+        if(weaponry.hasWeapon(UT2004ItemType.FLAK_CANNON) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.FLAK_CANNON))
+            return true ;
+        if(weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.LIGHTNING_GUN))
+            return true ;
+        if(weaponry.hasWeapon(UT2004ItemType.LINK_GUN) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.LINK_GUN))
+            return true ;
+        if(weaponry.hasWeapon(UT2004ItemType.MINIGUN) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.MINIGUN))
+            return true ;
+        if(weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.ROCKET_LAUNCHER))
+            return true ;
+        if(weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.SHOCK_RIFLE))
+            return true ;
+        return false ;
+    }
 
     protected void stateRunAroundItems() {
         //log.info("Decision is: ITEMS");
@@ -867,6 +852,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
