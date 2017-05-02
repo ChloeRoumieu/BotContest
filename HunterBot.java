@@ -439,7 +439,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 getAct().act(new StopShooting());
             }
             this.stateMedKit();
-            return;
+            //return;
         }
         
         if (!hasDecentWeapon()){
@@ -684,11 +684,13 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             navigation.stopNavigation();
             item = null;
         }
-        if (info.isShooting() || info.isSecondaryShooting()) {
-            getAct().act(new StopShooting());
+        if (enemy == null){
+            if (info.isShooting() || info.isSecondaryShooting()) {
+                getAct().act(new StopShooting());
+            }
+            move.setRotationSpeed(new Rotation(6144, 240000, 4096));
+            getAct().act(new Rotate().setAmount(32000));
         }
-        move.setRotationSpeed(new Rotation(6144, 240000, 4096));
-        getAct().act(new Rotate().setAmount(32000));
     }
 
     //////////////////
