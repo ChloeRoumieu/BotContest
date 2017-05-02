@@ -708,6 +708,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             bot.getBotName().setInfo("PURSUE");
             if (!enemy.isVisible()) {     
                 getAct().act(new StopShooting());
+            } else {
+                move.turnTo(enemy);
             }
             navigation.navigate(enemy);
             item = null;
@@ -858,6 +860,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
     }
 }
