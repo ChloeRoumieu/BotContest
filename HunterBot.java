@@ -535,7 +535,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
 
         // 2) stop shooting if enemy is not visible
         if (!enemy.isVisible()) {
-	        if (info.isShooting() || info.isSecondaryShooting()) {
+            if (info.isShooting() || info.isSecondaryShooting()) {
                 // stop shooting
                 getAct().act(new StopShooting());
             }
@@ -574,7 +574,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             } else {
                 // try shock combo if the shock rifle is the current weapon
                 if (distance > 600 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
-                    move.turnTo(enemy);
                     shoot.shootSecondary(enemy);
                     if (seeIncomingProjectile()) {
                         IncomingProjectile proj = pickProjectile();
@@ -684,6 +683,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             navigation.stopNavigation();
             item = null;
         }
+        if (info.isShooting() || info.isSecondaryShooting()) {
+            getAct().act(new StopShooting());
+        }
         getAct().act(new Rotate().setAmount(32000));
     }
 
@@ -703,11 +705,15 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             reset();
         }
         if (enemy != null) {
-        	bot.getBotName().setInfo("PURSUE");
-        	navigation.navigate(enemy);
-        	item = null;
+            bot.getBotName().setInfo("PURSUE");
+            if (!enemy.isVisible()) {     
+                getAct().act(new StopShooting());
+            }
+            navigation.navigate(enemy);
+            item = null;
         } else {
-        	reset();
+            getAct().act(new StopShooting());
+            reset();
         }
     }
     protected int pursueCount = 0;
@@ -852,6 +858,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
