@@ -282,7 +282,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponPrefs.newPrefsRange(400)
                 .add(UT2004ItemType.FLAK_CANNON, true)
                 .add(UT2004ItemType.MINIGUN, true)
-                .add(UT2004ItemType.LINK_GUN, false)
+                .add(UT2004ItemType.LINK_GUN, true)
                 .add(UT2004ItemType.SHOCK_RIFLE, false)
                 .add(UT2004ItemType.LIGHTNING_GUN, true)
                 .add(UT2004ItemType.ASSAULT_RIFLE, true);
@@ -291,7 +291,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 .add(UT2004ItemType.ROCKET_LAUNCHER, true)
                 .add(UT2004ItemType.MINIGUN, false)
                 .add(UT2004ItemType.FLAK_CANNON, false)
-                .add(UT2004ItemType.LINK_GUN, true)
+                .add(UT2004ItemType.LINK_GUN, false)
                 .add(UT2004ItemType.SHOCK_RIFLE, true)
                 .add(UT2004ItemType.LIGHTNING_GUN, true)
                 .add(UT2004ItemType.ASSAULT_RIFLE, true);
