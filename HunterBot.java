@@ -652,7 +652,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         }
         //move.turnTo(enemy);
         if (bot.getVelocity().isPlanarZero()){
-            move.moveTo(enemy);
+            //move.moveTo(enemy);
+            navigation.navigate(enemy);
             runningToPlayer = true;
         }
 
@@ -686,6 +687,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         if (info.isShooting() || info.isSecondaryShooting()) {
             getAct().act(new StopShooting());
         }
+        move.setRotationSpeed(new Rotation(6144, 240000, 4096));
         getAct().act(new Rotate().setAmount(32000));
     }
 
@@ -714,7 +716,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             navigation.navigate(enemy);
             item = null;
         } else {
-            getAct().act(new StopShooting());
+            if (info.isShooting() || info.isSecondaryShooting()) {
+                getAct().act(new StopShooting());
+            }
             reset();
         }
     }
@@ -732,7 +736,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         } else {
         	bot.getBotName().setInfo("MEDKIT");
         	navigation.navigate(item);
-        	this.item = item;
+                this.item = item;
         }
     }
 
