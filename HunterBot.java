@@ -490,8 +490,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         if (passingByItem()){
             Item nearestItem  = items.getPathNearestSpawnedItem();
             if (isItemInterseting(nearestItem)){
-                navigation.setContinueTo(item);
+                if (item != null)
+                    navigation.setContinueTo(item);
                 navigation.navigate(nearestItem);
+                if (item != null)
+                    navigation.navigate(item);
             }
         }
         
@@ -787,27 +790,23 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     }
     
     protected boolean isItemInterseting(Item item){
-        switch(item.getType().getCategory()){
-            case ADRENALINE :
-                if (info.getAdrenaline() < 100)
-                    return true ;
-            case AMMO :
-                return isAmmoInteresting(item) ;
-            case ARMOR : 
-                if (info.getArmor() < 100)
-                    return true ;
-            case HEALTH :
-                if (info.getHealth() < 199)
-                    return true ;
-            case SHIELD :
-                if (info.getHealth() < 100)
-                    return true ;
-            case WEAPON :
-                if (!weaponry.hasWeapon(item.getType()))
-                    return true ;
-            default :
-                return false ;
-        }
+        if (item.getType().getCategory().name().equals("ADRENALINE"))
+            if (info.getAdrenaline() < 100)
+                return true ;
+        if (item.getType().getCategory().name().equals("AMMO"))
+            return isAmmoInteresting(item) ;
+        if (item.getType().getCategory().name().equals("ARMOR"))
+            if (info.getArmor() < 100)
+                return true ;
+        if (item.getType().getCategory().name().equals("HEALTH"))
+            return isHealthIntersting(item) ;
+        if (item.getType().getCategory().name().equals("SHIELD"))
+            if (info.getHealth() < 100)
+                return true ;
+        if (item.getType().getCategory().name().equals("WEAPON"))
+            if (!weaponry.hasWeapon(item.getType()))
+                return true ;
+        return false ;
     }
     
     protected boolean isAmmoInteresting (Item item){
@@ -834,6 +833,18 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 return weaponry.getAmmo(item.getType()) < 50 ;
             if (item.getType().getGroup().toString().equals("SNIPER_RIFLE"))
                 return weaponry.getAmmo(item.getType()) < 40 ;
+            return false ;
+        }
+    }
+    
+    protected boolean isHealthIntersting (Item item){
+        if (item.getType().getCategory() != ItemType.Category.HEALTH){
+            return false ;
+        } else {
+            if (item.getType().getGroup().toString().equals("HEALTH"))
+                return info.getHealth() < 100 ;
+            if (item.getType().getGroup().toString().equals("MINI_HEALTH"))
+                return info.getHealth() < 199 ;
             return false ;
         }
     }
