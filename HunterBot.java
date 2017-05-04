@@ -492,9 +492,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             if (isItemInterseting(nearestItem) && nearestItem != null){
                 if (item != null)
                     navigation.setContinueTo(item);
+                sayGlobal("Going to " + nearestItem.getType().getName());
                 navigation.navigate(nearestItem);
-                if (item != null)
-                    navigation.navigate(item);
             }
         }
         
@@ -785,7 +784,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     protected boolean passingByItem(){
         Item nearestItem = items.getPathNearestSpawnedItem();
         if (nearestItem != null)
-            return nearestItem.getLocation().getDistance(bot.getLocation()) < 500;
+            return (nearestItem.getLocation().getDistance(bot.getLocation()) < 500);
         else 
             return false ;
     }
@@ -944,6 +943,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
