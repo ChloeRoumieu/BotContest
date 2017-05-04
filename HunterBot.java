@@ -13,7 +13,6 @@ import cz.cuni.amis.pogamut.base.utils.Pogamut;
 import cz.cuni.amis.pogamut.base.utils.guice.AgentScoped;
 import cz.cuni.amis.pogamut.base.utils.math.DistanceUtils;
 import cz.cuni.amis.pogamut.base3d.worldview.object.ILocated;
-import cz.cuni.amis.pogamut.base3d.worldview.object.Location;
 import cz.cuni.amis.pogamut.base3d.worldview.object.Rotation;
 import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.AdrenalineCombo;
 import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.Weapon;
@@ -488,6 +487,14 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
         }
         
+        if (passingByItem()){
+            Item nearestItem  = items.getPathNearestSpawnedItem();
+            if (isItemInterseting(nearestItem)){
+                navigation.setContinueTo(item);
+                navigation.navigate(nearestItem);
+            }
+        }
+        
         // 7) if nothing ... run around items
         stateRunAroundItems();
     }
@@ -770,6 +777,66 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             return true ;
         return false ;
     }
+        
+    protected boolean passingByItem(){
+        Item nearestItem = items.getPathNearestSpawnedItem();
+        if (nearestItem != null)
+            return nearestItem.getLocation().getDistance(bot.getLocation()) < 500;
+        else 
+            return false ;
+    }
+    
+    protected boolean isItemInterseting(Item item){
+        switch(item.getType().getCategory()){
+            case ADRENALINE :
+                if (info.getAdrenaline() < 100)
+                    return true ;
+            case AMMO :
+                return isAmmoInteresting(item) ;
+            case ARMOR : 
+                if (info.getArmor() < 100)
+                    return true ;
+            case HEALTH :
+                if (info.getHealth() < 199)
+                    return true ;
+            case SHIELD :
+                if (info.getHealth() < 100)
+                    return true ;
+            case WEAPON :
+                if (!weaponry.hasWeapon(item.getType()))
+                    return true ;
+            default :
+                return false ;
+        }
+    }
+    
+    protected boolean isAmmoInteresting (Item item){
+        if (item.getType().getCategory() != ItemType.Category.AMMO){
+            return false ;
+        } else {
+            if (item.getType().getGroup().toString().equals("ASSAULT_RIFLE"))
+                return weaponry.getAmmo(item.getType()) < 200 ;
+            /*if (item.getType().getName().equals("ASSAULT_RIFLE_GRENADE"))
+            return weaponry.getAmmo(item.getType()) <= 8 ;*/
+            if (item.getType().getGroup().toString().equals("BIO_RIFLE"))
+                return weaponry.getAmmo(item.getType()) < 50 ;
+            if (item.getType().getGroup().toString().equals("FLAK_CANNON"))
+                return weaponry.getAmmo(item.getType()) < 35 ;
+            if (item.getType().getGroup().toString().equals("LIGHTNING_GUN"))
+                return weaponry.getAmmo(item.getType()) < 40 ;
+            if (item.getType().getGroup().toString().equals("LINK_GUN"))
+                return weaponry.getAmmo(item.getType()) < 220 ;
+            if (item.getType().getGroup().toString().equals("MINIGUN"))
+                return weaponry.getAmmo(item.getType()) < 300 ;
+            if (item.getType().getGroup().toString().equals("ROCKET_LAUNCHER"))
+                return weaponry.getAmmo(item.getType()) < 30 ;
+            if (item.getType().getGroup().toString().equals("SHOCK_RIFLE"))
+                return weaponry.getAmmo(item.getType()) < 50 ;
+            if (item.getType().getGroup().toString().equals("SNIPER_RIFLE"))
+                return weaponry.getAmmo(item.getType()) < 40 ;
+            return false ;
+        }
+    }
 
     protected void stateRunAroundItems() {
         //log.info("Decision is: ITEMS");
@@ -808,7 +875,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             item = null ;
         }
         
-        
         if (item == null) {
         	log.warning("NO ITEM TO RUN FOR!");
         	if (navigation.isNavigating()) return;
@@ -818,7 +884,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         	this.item = item;
         	log.info("RUNNING FOR: " + item.getType().getName());
         	bot.getBotName().setInfo("ITEM: " + item.getType().getName() + "");
-        	navigation.navigate(item);        	
+        	navigation.navigate(item);
         }        
     }
 
@@ -866,6 +932,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
