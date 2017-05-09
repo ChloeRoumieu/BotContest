@@ -473,11 +473,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         
         if (passingByItem()){
             Item nearestItem  = items.getNearestSpawnedItem();
-            Item nearestItem1 = getNearestItemFromItem(nearestItem);
+            Item nextNearestItem = getNearestItemFromItem(nearestItem);
             if (isItemInterseting(nearestItem) && nearestItem != null && nearestItem != item && !navigatingToNearestItem){
                 navigatingToNearestItem = true ;
-                if (nearestItem1 != null)
-                    navigation.setContinueTo(nearestItem1);
+                if (nextNearestItem != null && nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) < 500)
+                    navigation.setContinueTo(nextNearestItem);
                 else 
                     navigation.setContinueTo(item);
                 navigation.navigate(nearestItem);
