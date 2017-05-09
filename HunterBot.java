@@ -13,6 +13,7 @@ import cz.cuni.amis.pogamut.base.utils.Pogamut;
 import cz.cuni.amis.pogamut.base.utils.guice.AgentScoped;
 import cz.cuni.amis.pogamut.base.utils.math.DistanceUtils;
 import cz.cuni.amis.pogamut.base3d.worldview.object.ILocated;
+import cz.cuni.amis.pogamut.base3d.worldview.object.Location;
 import cz.cuni.amis.pogamut.base3d.worldview.object.Rotation;
 import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.AdrenalineCombo;
 import cz.cuni.amis.pogamut.ut2004.agent.module.sensomotoric.Weapon;
@@ -52,6 +53,7 @@ import cz.cuni.amis.pogamut.ut2004.utils.UnrealUtils;
 import cz.cuni.amis.utils.collections.MyCollections;
 import cz.cuni.amis.utils.exception.PogamutException;
 import cz.cuni.amis.utils.flag.FlagListener;
+import java.util.Collection;
 import java.util.Map;
 import javax.vecmath.Vector3d;
 
@@ -82,16 +84,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     // Constants for rays' ids. It is allways better to store such values
     // in constants instead of using directly strings on multiple places of your
     // source code
-    //protected static final String FRONT = "frontRay";
     protected static final String LEFTBAS = "leftBasRay";
-    //protected static final String LEFT90 = "left90Ray";
     protected static final String LEFTSHORT = "leftShort";
     protected static final String RIGHTBAS = "rightBasRay";
-    //protected static final String RIGHT90 = "right90Ray";
     protected static final String RIGHTSHORT = "rightShort";
-    //protected static final String FRONTHAUT = "frontHaut";
     private AutoTraceRay leftbas , rightbas, leftshort, rightshort;
-    //private AutoTraceRay front, left90, right90 ;
     
      /**
      * Flag indicating that the bot has been just executed.
@@ -105,7 +102,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      */
     @JProp
     private boolean sensorLeftBas = false;
-    //private boolean sensorLeft90 = false;
     private boolean sensorLeftShort = false;
     /**
      * Whether the right45 sensor signalizes the collision. (Computed in the
@@ -114,7 +110,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      */
     @JProp
     private boolean sensorRightBas = false;
-    //private boolean sensorRight90 = false;
     private boolean sensorRightShort = false;
     /**
      * Whether the front sensor signalizes the collision. (Computed in the
@@ -253,7 +248,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         break;
 
                     case TARGET_REACHED:
-                        reset();
+                        //reset();
                         break;
                 }
             }
@@ -337,11 +332,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         getAct().act(new RemoveRay("All"));
 
         // 2. create new rays
-       // raycasting.createRay(FRONT,   new Vector3d(1, 0, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(LEFTBAS,  new Vector3d(0, -1, -0.3), rayBasLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHTBAS, new Vector3d(0, 1, -0.3), rayBasLength, fastTrace, floorCorrection, traceActor);
-        //raycasting.createRay(LEFT90,  new Vector3d(0, -1, 0), rayLength, fastTrace, floorCorrection, traceActor);
-        //raycasting.createRay(RIGHT90, new Vector3d(0, 1, 0), rayLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(LEFTSHORT,  new Vector3d(0, -1, 0), rayShortLength, fastTrace, floorCorrection, traceActor);
         raycasting.createRay(RIGHTSHORT, new Vector3d(0, 1, 0), rayShortLength, fastTrace, floorCorrection, traceActor);
         // register listener called when all rays are set up in the UT engine
@@ -350,14 +342,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 // once all rays were initialized store the AutoTraceRay objects
                 // that will come in response in local variables, it is just
                 // for convenience
-                //front = raycasting.getRay(FRONT);
                 leftbas = raycasting.getRay(LEFTBAS);
-                //left90 = raycasting.getRay(LEFT90);
                 leftshort = raycasting.getRay(LEFTSHORT);
                 rightbas = raycasting.getRay(RIGHTBAS);
-                //right90 = raycasting.getRay(RIGHT90);
                 rightshort = raycasting.getRay(RIGHTSHORT);
-                //frontHaut = raycasting.getRay(FRONTHAUT);
             }
         });
         // have you noticed the FlagListener interface? The Pogamut is often using {@link Flag} objects that
@@ -389,6 +377,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     protected void reset() {
     	item = null;
         enemy = null;
+        navigation.setFocus(null);
         navigation.stopNavigation();
         itemsToRunAround = null;
     }
@@ -441,11 +430,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             //return;
         }
         
-        if (!hasDecentWeapon()){
-            stateRunAroundItems() ;
-            return ;
-        }
-        
         // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
         if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
             stateEngage();
@@ -488,19 +472,33 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         }
         
         if (passingByItem()){
-            Item nearestItem  = items.getPathNearestSpawnedItem();
-            if (isItemInterseting(nearestItem) && nearestItem != null){
-                if (item != null)
+            Item nearestItem  = items.getNearestSpawnedItem();
+            Item nearestItem1 = getNearestItemFromItem(nearestItem);
+            if (isItemInterseting(nearestItem) && nearestItem != null && nearestItem != item && !navigatingToNearestItem){
+                navigatingToNearestItem = true ;
+                if (nearestItem1 != null)
+                    navigation.setContinueTo(nearestItem1);
+                else 
                     navigation.setContinueTo(item);
-                sayGlobal("Going to " + nearestItem.getType().getName());
                 navigation.navigate(nearestItem);
+                /*navigation.stopNavigation();
+                if (item != null && nearestItem1 != null){
+                move.moveAlong(nearestItem, nearestItem1);
+                }
+                else
+                move.moveTo(nearestItem);*/
+                navigatingToNearestItem = false ;
             }
         }
         
+        
         // 7) if nothing ... run around items
-        stateRunAroundItems();
+        if (!navigatingToNearestItem)
+            stateRunAroundItems();
     }
-
+    
+    boolean navigatingToNearestItem = false;
+    
     //////////////////
     // STATE ENGAGE //
     //////////////////
@@ -523,14 +521,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         if (!raycasting.getAllRaysInitialized().getFlag()) {
             return;
         }
-        //sensorFront = front.isResult();
         sensorLeftBas = leftbas.isResult();
         sensorRightBas = rightbas.isResult();
-        //sensorLeft90 = left90.isResult();
-        //sensorRight90 = right90.isResult();
         sensorLeftShort = leftshort.isResult();
         sensorRightShort = rightshort.isResult();
-
 
         // 1) pick new enemy if the old one has been lost
         if (enemy == null || !enemy.isVisible()) {
@@ -729,7 +723,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         } else {
             if (info.isShooting() || info.isSecondaryShooting()) {
                 getAct().act(new StopShooting());
-                navigation.setFocus(null);
             }
             reset();
         }
@@ -847,6 +840,19 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 return info.getHealth() < 199 ;
             return false ;
         }
+    }
+    
+    protected Item getNearestItemFromItem(Item item){
+        double distMin = 10000000;
+        Item nearestItem = null ;
+        Location itemLocation = item.getLocation();
+        Collection<Item> spawnedItems = items.getSpawnedItems().values();
+        for (Item spawnedItem : spawnedItems)
+            if (itemLocation.getDistance(spawnedItem.getLocation()) < distMin && itemLocation.getDistance(spawnedItem.getLocation()) > 10){
+                distMin = itemLocation.getDistance(spawnedItem.getLocation());
+                nearestItem = spawnedItem ;
+            }
+        return nearestItem;
     }
 
     protected void stateRunAroundItems() {
