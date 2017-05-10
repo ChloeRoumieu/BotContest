@@ -474,20 +474,21 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         
         if (passingByItem()){
             Item nearestItem  = items.getNearestSpawnedItem();
-            Item nextNearestItem = getNearestItemFromItem(nearestItem);
+            Item nextNearestItem = getNearestItemFromItem(nearestItem); ;
             if (isItemInterseting(nearestItem) && nearestItem != null && nearestItem != item && !navigatingToNearestItem){
                 navigatingToNearestItem = true ;
-                if (nextNearestItem != null && nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) < 500)
-                    navigation.setContinueTo(nextNearestItem);
-                else 
-                    navigation.setContinueTo(item);
-                navigation.navigate(nearestItem);
-                //navigation.stopNavigation();
-                //if (item != null && nearestItem1 != null){
-                //move.moveAlong(nearestItem, nearestItem1);
-                //}
+                if (nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) > 500 || !isItemInterseting(nextNearestItem))
+                    nextNearestItem = null;
+                //navigation.navigate(nearestItem);
+                //if (nextNearestItem != null )
+                //    navigation.setContinueTo(nextNearestItem.getLocation());
                 //else
-                //move.moveTo(nearestItem);
+                //    navigation.setContinueTo(item);
+                navigation.stopNavigation();
+                if (nextNearestItem != null)
+                    move.moveAlong(nearestItem, nextNearestItem);
+                else 
+                    move.moveTo(nearestItem);
                 navigatingToNearestItem = false ;
             }
         }
@@ -610,11 +611,18 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 Item nextNearestItem = getNearestItemFromItem(nearestItem);
                 if (isItemInterseting(nearestItem) && nearestItem != null && nearestItem != item && !navigatingToNearestItem){
                     navigatingToNearestItem = true ;
-                    if (nextNearestItem != null && nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) < 500)
-                        navigation.setContinueTo(nextNearestItem);
+                    if (nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) > 500 || !isItemInterseting(nextNearestItem))
+                        nextNearestItem = null;
+                    //navigation.navigate(nearestItem);
+                    //if (nextNearestItem != null )
+                    //    navigation.setContinueTo(nextNearestItem.getLocation());
+                    //else
+                    //    navigation.setContinueTo(item);
+                    navigation.stopNavigation();
+                    if (nextNearestItem != null)
+                        move.moveAlong(nearestItem, nextNearestItem);
                     else 
-                        navigation.setContinueTo(item);
-                    navigation.navigate(nearestItem);
+                        move.moveTo(nearestItem);
                     navigatingToNearestItem = false ;
                 }
             }
@@ -623,8 +631,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         }
     }
     
-	
-	
     boolean navigatingToNearestItem = false;
     
     //////////////////
@@ -844,9 +850,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             if (!enemy.isVisible()) {     
                 getAct().act(new StopShooting());
                 navigation.setFocus(null);
+            } else {
+                navigation.setFocus(enemy);
             }
-            navigation.navigate(enemy);
-            navigation.setFocus(enemy);
+            navigation.navigate(enemy.getLocation());
             item = null;
         } else {
             if (info.isShooting() || info.isSecondaryShooting()) {
@@ -1077,6 +1084,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
     }
 }
