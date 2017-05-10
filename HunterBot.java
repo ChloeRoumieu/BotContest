@@ -69,6 +69,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     
     /* module pour gérer les combos d'adrénaline */
     protected OurAdrenalineCombo adrenalineCombo;
+    protected Comportement comportementBot = new Comportement();
     
     /**
 	 * Initializes memory/command modules of the bot.
