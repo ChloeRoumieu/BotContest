@@ -419,7 +419,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      *
      * @throws cz.cuni.amis.pogamut.base.exceptions.PogamutException
      */
-    @Override
+    /*@Override
     public void logic() {
         
         if (info.getHealth() < criticalHealthLevel) {
@@ -481,12 +481,12 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 else 
                     navigation.setContinueTo(item);
                 navigation.navigate(nearestItem);
-                /*navigation.stopNavigation();
-                if (item != null && nearestItem1 != null){
-                move.moveAlong(nearestItem, nearestItem1);
-                }
-                else
-                move.moveTo(nearestItem);*/
+                //navigation.stopNavigation();
+                //if (item != null && nearestItem1 != null){
+                //move.moveAlong(nearestItem, nearestItem1);
+                //}
+                //else
+                //move.moveTo(nearestItem);
                 navigatingToNearestItem = false ;
             }
         }
@@ -495,8 +495,135 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         // 7) if nothing ... run around items
         if (!navigatingToNearestItem)
             stateRunAroundItems();
+    }*/
+    
+    @Override
+    public void logic() {
+        comportementBot.changementHumeurBot(deaths, frags, healthLevel);
+        if(comportementBot.getHumeurBot().equals(HumeurBot.Nerveux)){
+            log.info("JE SUIS NERVEUX");
+            if ((info.isShooting() || info.isSecondaryShooting()) && !players.canSeeEnemies() ) {
+                    getAct().act(new StopShooting());
+            }
+            this.stateMedKit();
+            
+            move.setRotationSpeed(new Rotation(6144, 240000, 4096));
+            getAct().act(new Rotate().setAmount(32000));
+            // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
+            if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
+                stateEngage();
+                return;
+            }
+            // 3) are you being shot? 	-> go to HIT (turn around - try to find your enemy)
+            if (senses.isBeingDamaged()) {
+                this.stateHit();
+                return;
+            }
+        }
+        
+        
+        if(comportementBot.getHumeurBot().equals(HumeurBot.Enrage)){
+            log.info("JE SUIS ENRAGE");
+            if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
+                stateEngage();
+                return;
+            }
+
+            // 3) are you being shot? 	-> go to HIT (turn around - try to find your enemy)
+            if (senses.isBeingDamaged()) {
+                this.stateHit();
+                return;
+            }
+
+            // 4) have you got enemy to pursue? -> go to the last position of enemy
+            if (enemy != null && shouldPursue && weaponry.hasLoadedWeapon()) {  // !enemy.isVisible() because of 2)
+                this.statePursue();
+                return;
+            }
+        }
+        
+        
+        
+        if(comportementBot.getHumeurBot().equals(HumeurBot.Decourage)){
+            log.info("JE SUIS DECOURAGE");
+            if (info.isShooting() || info.isSecondaryShooting()) {
+                getAct().act(new StopShooting());
+            }
+            navigation.stopNavigation();
+            move.stopMovement();
+        }
+        
+        
+        if(comportementBot.getHumeurBot().equals(HumeurBot.Neutre) || comportementBot.getHumeurBot().equals(HumeurBot.Confiant)){
+            if(comportementBot.getHumeurBot() == HumeurBot.Confiant){
+                log.info("JE SUIS CONFIANT");
+            }
+            if(comportementBot.getHumeurBot() == HumeurBot.Neutre){
+                log.info("JE SUIS NEUTRE");
+            }
+            
+            if (info.getHealth() < criticalHealthLevel) {
+                if (info.isShooting() || info.isSecondaryShooting()) {
+                    getAct().act(new StopShooting());
+                }
+                this.stateMedKit();
+                //return;
+            }
+
+            if (!hasDecentWeapon()){
+                stateRunAroundItems() ;
+                return ;
+            }
+
+            // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
+            if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
+                stateEngage();
+                return;
+            }
+
+            // 2) are you shooting? 	-> stop shooting, you've lost your target
+            if (info.isShooting() || info.isSecondaryShooting()) {
+                getAct().act(new StopShooting());
+            }
+
+            // 3) are you being shot? 	-> go to HIT (turn around - try to find your enemy)
+            if (senses.isBeingDamaged()) {
+                this.stateHit();
+                return;
+            }
+
+            // 4) have you got enemy to pursue? -> go to the last position of enemy
+            if (enemy != null && shouldPursue && weaponry.hasLoadedWeapon()) {  // !enemy.isVisible() because of 2)
+                this.statePursue();
+                return;
+            }
+
+            // 5) are you hurt?			-> get yourself some medKit
+            if (shouldCollectHealth && info.getHealth() < healthLevel) {
+                this.stateMedKit();
+                return;
+            }
+            
+            if (passingByItem()){
+                Item nearestItem  = items.getNearestSpawnedItem();
+                Item nextNearestItem = getNearestItemFromItem(nearestItem);
+                if (isItemInterseting(nearestItem) && nearestItem != null && nearestItem != item && !navigatingToNearestItem){
+                    navigatingToNearestItem = true ;
+                    if (nextNearestItem != null && nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) < 500)
+                        navigation.setContinueTo(nextNearestItem);
+                    else 
+                        navigation.setContinueTo(item);
+                    navigation.navigate(nearestItem);
+                    navigatingToNearestItem = false ;
+                }
+            }
+            // 6) if nothing ... run around items
+            stateRunAroundItems();
+        }
     }
     
+	
+	
     boolean navigatingToNearestItem = false;
     
     //////////////////
