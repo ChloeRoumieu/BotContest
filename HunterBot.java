@@ -507,7 +507,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             if ((info.isShooting() || info.isSecondaryShooting()) && !players.canSeeEnemies() ) {
                     getAct().act(new StopShooting());
             }
-            this.stateMedKit();
+            if (info.getHealth() < criticalHealthLevel) 
+                this.stateMedKit();
             
             move.setRotationSpeed(new Rotation(6144, 240000, 4096));
             getAct().act(new Rotate().setAmount(32000));
@@ -572,11 +573,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 //return;
             }
 
-            if (!hasDecentWeapon()){
-                stateRunAroundItems() ;
-                return ;
-            }
-
             // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
             if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
                 stateEngage();
@@ -618,11 +614,15 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                     //    navigation.setContinueTo(nextNearestItem.getLocation());
                     //else
                     //    navigation.setContinueTo(item);
-                    navigation.stopNavigation();
-                    if (nextNearestItem != null)
+                    if (nextNearestItem != null){
+                        if (navigation.isNavigating())
+                            navigation.stopNavigation();
                         move.moveAlong(nearestItem, nextNearestItem);
-                    else 
-                        move.moveTo(nearestItem);
+                        //navigation.navigate(nearestItem);
+                    }
+                    else{
+                        navigation.navigate(nearestItem);
+                    }
                     navigatingToNearestItem = false ;
                 }
             }
@@ -853,7 +853,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             } else {
                 navigation.setFocus(enemy);
             }
-            navigation.navigate(enemy.getLocation());
+            navigation.navigate(enemy);
             item = null;
         } else {
             if (info.isShooting() || info.isSecondaryShooting()) {
@@ -1084,6 +1084,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
