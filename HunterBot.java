@@ -694,7 +694,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             weaponry.changeWeapon(UT2004ItemType.ROCKET_LAUNCHER);*/
             
             //Donne au bot le lighting gun et des munitions, a supprimer
-            if (!weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN)) {
+            /*if (!weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN)) {
                 log.info("Getting WEAPON");
                 getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN.getName()));
             }
@@ -702,10 +702,10 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 log.info("Getting AMMO");
                 getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN_AMMO.getName()));
             }
-            weaponry.changeWeapon(UT2004ItemType.LIGHTNING_GUN);
+            weaponry.changeWeapon(UT2004ItemType.LIGHTNING_GUN);*/
             
             //Tir dans la tete si le lighting gun est current weapon
-            boolean headshot = random.nextFloat() > 0.5 ;
+            boolean headshot = random.nextFloat() > 0.7 ;
             if (headshot && weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN) && weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.LIGHTNING_GUN)) {
                 if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy.getLocation().addZ(40))) { 
                     log.info("Shooting lighting at enemy's head");
@@ -1094,6 +1094,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
     }
 }
