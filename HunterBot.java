@@ -639,7 +639,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         //log.info("Decision is: ENGAGE");
         //config.setName("Hunter [ENGAGE]");
 
-        boolean shooting = false;
+        boolean shooting = false ;
         double distance = Double.MAX_VALUE;
         pursueCount = 0;
         // if the rays are not initialized yet, do nothing and wait for their initialization 
@@ -684,42 +684,62 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             
             //Donne au bot le lance rocket et des munitions, a supprimer
             /*if (!weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER)) {
-            log.info("Getting WEAPON");
-            getAct().act(new AddInventory().setType(UT2004ItemType.ROCKET_LAUNCHER.getName()));
+                log.info("Getting WEAPON");
+                getAct().act(new AddInventory().setType(UT2004ItemType.ROCKET_LAUNCHER.getName()));
             }
             if (!weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER)) {
-            log.info("Getting AMMO");
-            getAct().act(new AddInventory().setType(UT2004ItemType.ROCKET_LAUNCHER_AMMO.getName()));
+                log.info("Getting AMMO");
+                getAct().act(new AddInventory().setType(UT2004ItemType.ROCKET_LAUNCHER_AMMO.getName()));
             }
             weaponry.changeWeapon(UT2004ItemType.ROCKET_LAUNCHER);*/
             
-            //Tir dans les pieds si le lance rocket est current weapon
-            if (weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER) && weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.ROCKET_LAUNCHER)) {
-                if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy.getLocation().addZ(-50))) { 
-                    log.info("Shooting rockets at enemy's feet");
+            //Donne au bot le lighting gun et des munitions, a supprimer
+            if (!weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN)) {
+                log.info("Getting WEAPON");
+                getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN.getName()));
+            }
+            if (!weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN)) {
+                log.info("Getting AMMO");
+                getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN_AMMO.getName()));
+            }
+            weaponry.changeWeapon(UT2004ItemType.LIGHTNING_GUN);
+            
+            //Tir dans la tete si le lighting gun est current weapon
+            boolean headshot = random.nextFloat() > 0.5 ;
+            if (headshot && weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN) && weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.LIGHTNING_GUN)) {
+                if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy.getLocation().addZ(40))) { 
+                    log.info("Shooting lighting at enemy's head");
                     shooting = true;
                 }
             } else {
-                // try shock combo if the shock rifle is the current weapon
-                if (distance > 600 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
-                    shoot.shootSecondary(enemy);
-                    if (seeIncomingProjectile()) {
-                        IncomingProjectile proj = pickProjectile();
-                        if (proj.getType().equals("XWeapons.ShockProjectile")){
-                            log.info("Shooting PROJECTILE");
-                            shoot.shoot(proj.getId());
-                        }
-                    }
-                    shooting = true;
-                // tir normal
-                } else {
-                    if (shoot.shoot(weaponPrefs, enemy) != null) {
-                   // if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy)) { // A CHECKER LE BOOLEEN 
-                        log.info("Shooting at enemy!!!");
+                //Tir dans les pieds si le lance rocket est current weapon
+                if (weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER) && weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.ROCKET_LAUNCHER)) {
+                    if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy.getLocation().addZ(-50))) { 
+                        log.info("Shooting rockets at enemy's feet");
                         shooting = true;
                     }
+                } else {
+                    // try shock combo if the shock rifle is the current weapon
+                    if (distance > 600 && weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE) && weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.SHOCK_RIFLE)) {
+                        shoot.shootSecondary(enemy);
+                        if (seeIncomingProjectile()) {
+                            IncomingProjectile proj = pickProjectile();
+                            if (proj.getType().equals("XWeapons.ShockProjectile")){
+                                log.info("Shooting PROJECTILE");
+                                shoot.shoot(proj.getId());
+                            }
+                        }
+                        shooting = true;
+                    } else {
+                        // tir normal
+                        if (shoot.shoot(weaponPrefs, enemy) != null) {
+                        // if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy)) { // A CHECKER LE BOOLEEN 
+                            log.info("Shooting at enemy!!!");
+                            shooting = true;
+                        }
+                    }
                 }
-            }   
+            }
         }
         
         distance = info.getLocation().getDistance(enemy.getLocation());
@@ -1074,6 +1094,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
