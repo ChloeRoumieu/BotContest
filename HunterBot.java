@@ -420,150 +420,54 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      *
      * @throws cz.cuni.amis.pogamut.base.exceptions.PogamutException
      */
-    /*@Override
-    public void logic() {
-        
-        if (info.getHealth() < criticalHealthLevel) {
-            if (info.isShooting() || info.isSecondaryShooting()) {
-                getAct().act(new StopShooting());
-            }
-            this.stateMedKit();
-            //return;
-        }
-        
-        // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
-        if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
-            stateEngage();
-            return;
-        }
-
-        // 2) are you shooting? 	-> stop shooting, you've lost your target
-        if (info.isShooting() || info.isSecondaryShooting()) {
-            getAct().act(new StopShooting());
-        }
-
-        // 3) are you being shot? 	-> go to HIT (turn around - try to find your enemy)
-        if (senses.isBeingDamaged()) {
-            this.stateHit();
-            return;
-        }
-
-        // 4) have you got enemy to pursue? -> go to the last position of enemy
-        if (enemy != null && shouldPursue && weaponry.hasLoadedWeapon()) {  // !enemy.isVisible() because of 2)
-            this.statePursue();
-            return;
-        }
-
-        // 5) are you hurt?			-> get yourself some medKit
-        if (shouldCollectHealth && info.getHealth() < healthLevel) {
-            this.stateMedKit();
-            return;
-        }
-
-        //6) have you enough adrenaline ?
-        // impossible d'utiliser les autres combos, seulement le booster, les autres fonctions utilisent aussi le booster
-        if (info.isAdrenalineSufficient()) {
-            log.info("use adrenaline.");
-            if (info.getHealth() < healthLevel){
-                adrenalineCombo.performDefensive();
-            }
-            else{
-                adrenalineCombo.performInvisible();
-            }
-        }
-        
-        if (passingByItem()){
-            Item nearestItem  = items.getNearestSpawnedItem();
-            Item nextNearestItem = getNearestItemFromItem(nearestItem); ;
-            if (isItemInterseting(nearestItem) && nearestItem != null && nearestItem != item && !navigatingToNearestItem){
-                navigatingToNearestItem = true ;
-                if (nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) > 500 || !isItemInterseting(nextNearestItem))
-                    nextNearestItem = null;
-                //navigation.navigate(nearestItem);
-                //if (nextNearestItem != null )
-                //    navigation.setContinueTo(nextNearestItem.getLocation());
-                //else
-                //    navigation.setContinueTo(item);
-                navigation.stopNavigation();
-                if (nextNearestItem != null)
-                    move.moveAlong(nearestItem, nextNearestItem);
-                else 
-                    move.moveTo(nearestItem);
-                navigatingToNearestItem = false ;
-            }
-        }
-        
-        
-        // 7) if nothing ... run around items
-        if (!navigatingToNearestItem)
-            stateRunAroundItems();
-    }*/
-    
     @Override
     public void logic() {
+        HumeurBot previousHumeur = comportementBot.getHumeurBot();
         comportementBot.changementHumeurBot(deaths, frags, healthLevel);
+        HumeurBot newHumeur = comportementBot.getHumeurBot();
+        
+        if (!newHumeur.equals(previousHumeur))
+            sayGlobal("Je suis " + newHumeur.name());
+            log.info("Je suis " + newHumeur);
+        
         if(comportementBot.getHumeurBot().equals(HumeurBot.Nerveux)){
-            log.info("JE SUIS NERVEUX");
-            if ((info.isShooting() || info.isSecondaryShooting()) && !players.canSeeEnemies() ) {
-                    getAct().act(new StopShooting());
-            }
-            if (info.getHealth() < criticalHealthLevel) 
-                this.stateMedKit();
+            //log.info("JE SUIS NERVEUX");
             
-            move.setRotationSpeed(new Rotation(6144, 240000, 4096));
-            getAct().act(new Rotate().setAmount(32000));
-            // 1) do you see enemy? 	-> go to PURSUE (start shooting / hunt the enemy)
-            if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
-                stateEngage();
-                return;
-            }
-            // 3) are you being shot? 	-> go to HIT (turn around - try to find your enemy)
-            if (senses.isBeingDamaged()) {
-                this.stateHit();
-                return;
-            }
+            // Comportement nerveux
+            // a determiner
         }
         
         
         if(comportementBot.getHumeurBot().equals(HumeurBot.Enrage)){
-            log.info("JE SUIS ENRAGE");
-            if (shouldEngage && players.canSeeEnemies() && weaponry.hasLoadedWeapon()) {
-                stateEngage();
-                return;
-            }
+            //log.info("JE SUIS ENRAGE");
+            
+            // Comportement enragé
+            // a determiner
 
-            // 3) are you being shot? 	-> go to HIT (turn around - try to find your enemy)
-            if (senses.isBeingDamaged()) {
-                this.stateHit();
-                return;
-            }
-
-            // 4) have you got enemy to pursue? -> go to the last position of enemy
-            if (enemy != null && shouldPursue && weaponry.hasLoadedWeapon()) {  // !enemy.isVisible() because of 2)
-                this.statePursue();
-                return;
-            }
         }
         
         
         
         if(comportementBot.getHumeurBot().equals(HumeurBot.Decourage)){
-            log.info("JE SUIS DECOURAGE");
-            if (info.isShooting() || info.isSecondaryShooting()) {
-                getAct().act(new StopShooting());
-            }
-            navigation.stopNavigation();
-            move.stopMovement();
+            //log.info("JE SUIS DECOURAGE");
+            
+            // Comportement découragé
+            // a determiner
+
         }
         
         
         if(comportementBot.getHumeurBot().equals(HumeurBot.Neutre) || comportementBot.getHumeurBot().equals(HumeurBot.Confiant)){
             if(comportementBot.getHumeurBot() == HumeurBot.Confiant){
-                log.info("JE SUIS CONFIANT");
+                //log.info("JE SUIS CONFIANT");
+                // a determiner
             }
             if(comportementBot.getHumeurBot() == HumeurBot.Neutre){
-                log.info("JE SUIS NEUTRE");
+                //log.info("JE SUIS NEUTRE");
             }
+            
+            // Comportement NEUTRE
+
             
             if (info.getHealth() < criticalHealthLevel) {
                 if (info.isShooting() || info.isSecondaryShooting()) {
@@ -603,26 +507,28 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
             
             if (passingByItem()){
-                Item nearestItem  = items.getNearestSpawnedItem();
-                Item nextNearestItem = getNearestItemFromItem(nearestItem);
-                if (isItemInterseting(nearestItem) && nearestItem != null && nearestItem != item && !navigatingToNearestItem){
-                    navigatingToNearestItem = true ;
-                    if (nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) > 500 || !isItemInterseting(nextNearestItem))
-                        nextNearestItem = null;
-                    navigation.navigate(nearestItem);
-                    if (nextNearestItem != null )
-                        navigation.setContinueTo(nextNearestItem.getLocation());
-                    else
-                        navigation.setContinueTo(item);
-                    navigatingToNearestItem = false ;
-                }
+                this.statePassingByItem() ;
             }
             // 6) if nothing ... run around items
             stateRunAroundItems();
         }
     }
     
-    boolean navigatingToNearestItem = false;
+    //////////////////
+    // STATE MEDKIT //
+    //////////////////
+    protected void stateMedKit() {
+        //log.info("Decision is: MEDKIT");
+        Item item = items.getPathNearestSpawnedItem(ItemType.Category.HEALTH);
+        if (item == null) {
+        	log.warning("NO HEALTH ITEM TO RUN TO => ITEMS");
+        	stateRunAroundItems();
+        } else {
+        	bot.getBotName().setInfo("MEDKIT");
+        	navigation.navigate(item);
+                this.item = item;
+        }
+    }
     
     //////////////////
     // STATE ENGAGE //
@@ -682,28 +588,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
             weaponry.changeWeapon(UT2004ItemType.SHOCK_RIFLE);*/
             
-            //Donne au bot le lance rocket et des munitions, a supprimer
-            /*if (!weaponry.hasWeapon(UT2004ItemType.ROCKET_LAUNCHER)) {
-                log.info("Getting WEAPON");
-                getAct().act(new AddInventory().setType(UT2004ItemType.ROCKET_LAUNCHER.getName()));
-            }
-            if (!weaponry.hasLoadedWeapon(UT2004ItemType.ROCKET_LAUNCHER)) {
-                log.info("Getting AMMO");
-                getAct().act(new AddInventory().setType(UT2004ItemType.ROCKET_LAUNCHER_AMMO.getName()));
-            }
-            weaponry.changeWeapon(UT2004ItemType.ROCKET_LAUNCHER);*/
-            
-            //Donne au bot le lighting gun et des munitions, a supprimer
-            /*if (!weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN)) {
-                log.info("Getting WEAPON");
-                getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN.getName()));
-            }
-            if (!weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN)) {
-                log.info("Getting AMMO");
-                getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN_AMMO.getName()));
-            }
-            weaponry.changeWeapon(UT2004ItemType.LIGHTNING_GUN);*/
-            
             //Tir dans la tete si le lighting gun est current weapon
             boolean headshot = random.nextFloat() > 0.7 ;
             if (headshot && weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN) && weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.LIGHTNING_GUN)) {
@@ -753,60 +637,47 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             if (rand2 > 0.8) {
                 if ((!sensorRightShort) && sensorRightBas && (!sensorLeftShort) && sensorLeftBas ) {
                     if (direction) {
-                        //sayGlobal("dodge droite1");
                         move.dodgeRight(enemy, false);
                     } else {
-                        //sayGlobal("dodge gauche1");
                         move.dodgeLeft(enemy, false);
                     }
                 } else {
                     if ((!sensorRightShort) && sensorRightBas) {
-                        //sayGlobal("dodge droite");
                         move.dodgeRight(enemy, false);
                     } else {
                         if ((!sensorLeftShort) && sensorLeftBas) {
-                            //sayGlobal("dodge gauche");
                             move.dodgeLeft(enemy, false);
                         } else {
                             move.doubleJump();
-                            //sayGlobal("double saut");
                         }
                     }
                 }
             } else {
                 if ((!sensorRightShort) && sensorRightBas && (!sensorLeftShort) && sensorLeftBas ) {
                     if (direction) {
-                        //sayGlobal("strafe droite1");
                         move.strafeRight(200);
                     } else {
-                        //sayGlobal("strafe gauche1");
                         move.strafeLeft(200);
                     }
                 } else {
                     if ((!sensorRightShort) && sensorRightBas) {
-                        //sayGlobal("strafe droite");
                         move.strafeRight(200);
                     } else {
                         if ((!sensorLeftShort) && sensorLeftBas) {
-                            //sayGlobal("strafe gauche");
                             move.strafeLeft(200);
                         } else {
                             move.jump();
-                            //sayGlobal("saut");
                         }
                     }
                 }
             }
         }
-        //move.turnTo(enemy);
         if (bot.getVelocity().isPlanarZero()){
-            //move.moveTo(enemy);
             navigation.navigate(enemy);
             runningToPlayer = true;
         }
 
         // 3) if enemy is far or not visible - run to him
-        //int decentDistance = Math.round(random.nextFloat() * 800);
         int decentDistance = 1200 ;
         distance = info.getLocation().getDistance(enemy.getLocation());
         if (!enemy.isVisible() || !shooting || decentDistance < distance) { 
@@ -815,10 +686,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 runningToPlayer = true;
                 
             }
-        } /*else {
-            runningToPlayer = false;
-            navigation.stopNavigation();
-        }*/
+        }
         item = null;
     }
 
@@ -874,26 +742,109 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     }
     protected int pursueCount = 0;
 
-    //////////////////
-    // STATE MEDKIT //
-    //////////////////
-    protected void stateMedKit() {
-        //log.info("Decision is: MEDKIT");
-        Item item = items.getPathNearestSpawnedItem(ItemType.Category.HEALTH);
-        if (item == null) {
-        	log.warning("NO HEALTH ITEM TO RUN TO => ITEMS");
-        	stateRunAroundItems();
-        } else {
-        	bot.getBotName().setInfo("MEDKIT");
-        	navigation.navigate(item);
-                this.item = item;
-        }
+    
+
+    ////////////////////////////
+    // STATE PASSING BY ITEM  //
+    ////////////////////////////
+    boolean navigatingToNearestItem = false;
+    protected void statePassingByItem() {
+            Item nearestItem  = items.getNearestSpawnedItem();
+            if (isItemInterseting(nearestItem) && item != null && nearestItem != null && nearestItem != item && !navigatingToNearestItem){
+                navigatingToNearestItem = true ;
+                Item nextNearestItem = getNearestItemFromItem(nearestItem);
+                if (nextNearestItem.getLocation().getDistance(nearestItem.getLocation()) > 500 || !isItemInterseting(nextNearestItem))
+                    nextNearestItem = null;
+                if (nearestItem.getLocation().getDistance(this.info.getLocation()) < item.getLocation().getDistance(this.info.getLocation())){
+                    navigation.navigate(nearestItem);
+                    if (nextNearestItem != null)
+                        navigation.setContinueTo(nextNearestItem.getLocation());
+                    else 
+                            navigation.setContinueTo(item);
+                } else {
+                    navigation.navigate(item) ;
+                }
+                navigatingToNearestItem = false ;
+            }
     }
 
     ////////////////////////////
     // STATE RUN AROUND ITEMS //
     ////////////////////////////
     protected List<Item> itemsToRunAround = null;
+    protected void stateRunAroundItems() {
+        //log.info("Decision is: ITEMS");
+        //config.setName("Hunter [ITEMS]");
+        if (navigation.isNavigatingToItem()) return;
+        
+        List<Item> interesting = new ArrayList<Item>();
+        
+        if (this.hasDecentWeapon()) {
+            // ADD QUADS
+            interesting.addAll(items.getSpawnedItems(UT2004ItemType.U_DAMAGE_PACK).values());
+            interesting.addAll(items.getSpawnedItems(UT2004ItemType.SUPER_HEALTH_PACK).values());
+            // ADD ARMORS
+            for (ItemType itemType : ItemType.Category.ARMOR.getTypes()) {
+                    interesting.addAll(items.getSpawnedItems(itemType).values());
+            }
+        }
+       
+        if (MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
+            // ADD WEAPONS
+            for (ItemType itemType : ItemType.Category.WEAPON.getTypes()) {
+                    if (!weaponry.hasLoadedWeapon(itemType)) interesting.addAll(items.getSpawnedItems(itemType).values());
+            }
+            // ADD HEALTHS
+            if (info.getHealth() < 100) {
+                    interesting.addAll(items.getSpawnedItems(UT2004ItemType.HEALTH_PACK).values());
+            }
+            // ADD ADRENALINE
+            interesting.addAll(items.getSpawnedItems(UT2004ItemType.ADRENALINE_PACK).values());
+        }
+        
+        Item item ;
+        if (!MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
+            item = MyCollections.asList(tabooItems.filter(interesting)).get(0);
+        } else {
+            item = null ;
+        }
+        
+        if (item == null) {
+        	log.warning("NO ITEM TO RUN FOR!");
+        	if (navigation.isNavigating()) return;
+        	bot.getBotName().setInfo("RANDOM NAV");
+        	navigation.navigate(navPoints.getRandomNavPoint());
+        } else {
+        	this.item = item;
+        	log.info("RUNNING FOR: " + item.getType().getName());
+        	bot.getBotName().setInfo("ITEM: " + item.getType().getName() + "");
+        	navigation.navigate(item);
+        }        
+    }
+
+    ////////////////
+    // BOT KILLED //
+    ////////////////
+    @Override
+    public void botKilled(BotKilled event) {
+    	reset();
+        /* maj des probabilites d'efficacite d'une arme */
+        weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), false);
+        
+    }
+    
+        ///////////////////////////////////////////////////////////////
+
+    private boolean seeIncomingProjectile() {
+    	for (IncomingProjectile proj : world.getAll(IncomingProjectile.class).values()) {
+    		if (proj.isVisible()) return true;
+    	}
+        return false;
+    }
+    
+    private IncomingProjectile pickProjectile() {
+            return DistanceUtils.getNearest(world.getAll(IncomingProjectile.class).values(), info.getLocation());
+    }
     
     protected boolean hasDecentWeapon(){
         return (this.weaponry.hasWeapon(UT2004ItemType.BIO_RIFLE) || this.weaponry.hasWeapon(UT2004ItemType.FLAK_CANNON) || this.weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN)
@@ -901,7 +852,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                 || this.weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE));
     }
 	
-	protected boolean hasDecentAmmo(){
+    protected boolean hasDecentAmmo(){
         if(weaponry.hasWeapon(UT2004ItemType.BIO_RIFLE) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.BIO_RIFLE))
             return true ;
         if(weaponry.hasWeapon(UT2004ItemType.FLAK_CANNON) && weaponry.hasPrimaryWeaponAmmo(UT2004ItemType.FLAK_CANNON))
@@ -918,7 +869,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             return true ;
         return false ;
     }
-        
+    
     protected boolean passingByItem(){
         Item nearestItem = items.getPathNearestSpawnedItem();
         if (nearestItem != null)
@@ -999,78 +950,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
         return nearestItem;
     }
-
-    protected void stateRunAroundItems() {
-        //log.info("Decision is: ITEMS");
-        //config.setName("Hunter [ITEMS]");
-        if (navigation.isNavigatingToItem()) return;
-        
-        List<Item> interesting = new ArrayList<Item>();
-        
-        if (this.hasDecentWeapon()) {
-            // ADD QUADS
-            interesting.addAll(items.getSpawnedItems(UT2004ItemType.U_DAMAGE_PACK).values());
-            interesting.addAll(items.getSpawnedItems(UT2004ItemType.SUPER_HEALTH_PACK).values());
-            // ADD ARMORS
-            for (ItemType itemType : ItemType.Category.ARMOR.getTypes()) {
-                    interesting.addAll(items.getSpawnedItems(itemType).values());
-            }
-        }
-       
-        if (MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
-            // ADD WEAPONS
-            for (ItemType itemType : ItemType.Category.WEAPON.getTypes()) {
-                    if (!weaponry.hasLoadedWeapon(itemType)) interesting.addAll(items.getSpawnedItems(itemType).values());
-            }
-            // ADD HEALTHS
-            if (info.getHealth() < 100) {
-                    interesting.addAll(items.getSpawnedItems(UT2004ItemType.HEALTH_PACK).values());
-            }
-            // ADD ADRENALINE
-            interesting.addAll(items.getSpawnedItems(UT2004ItemType.ADRENALINE_PACK).values());
-        }
-        
-        Item item ;
-        if (!MyCollections.asList(tabooItems.filter(interesting)).isEmpty()){
-            item = MyCollections.asList(tabooItems.filter(interesting)).get(0);
-        } else {
-            item = null ;
-        }
-        
-        if (item == null) {
-        	log.warning("NO ITEM TO RUN FOR!");
-        	if (navigation.isNavigating()) return;
-        	bot.getBotName().setInfo("RANDOM NAV");
-        	navigation.navigate(navPoints.getRandomNavPoint());
-        } else {
-        	this.item = item;
-        	log.info("RUNNING FOR: " + item.getType().getName());
-        	bot.getBotName().setInfo("ITEM: " + item.getType().getName() + "");
-        	navigation.navigate(item);
-        }        
-    }
-
-    ////////////////
-    // BOT KILLED //
-    ////////////////
-    @Override
-    public void botKilled(BotKilled event) {
-    	reset();
-        /* maj des probabilites d'efficacite d'une arme */
-        weaponsPriority.majWeapon(weaponry.getItemTypeForId(info.getCurrentWeapon()), false);
-        
-    }
-    
-    private boolean seeIncomingProjectile() {
-    	for (IncomingProjectile proj : world.getAll(IncomingProjectile.class).values()) {
-    		if (proj.isVisible()) return true;
-    	}
-        return false;
-    }
-    
-    private IncomingProjectile pickProjectile() {
-            return DistanceUtils.getNearest(world.getAll(IncomingProjectile.class).values(), info.getLocation());
-    }
     
     ///////////////////////////////////
     public static void main(String args[]) throws PogamutException {
@@ -1094,6 +973,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
