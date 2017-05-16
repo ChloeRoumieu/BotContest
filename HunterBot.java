@@ -205,8 +205,8 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         //test
         log.info(weaponsPriority.afficherListe());
     }
-	
-	/*
+    
+    /*
 	        @ObjectClassListener(objectClass = IncomingProjectile.class)
     public void NeedToDodge(IWorldObjectEvent<IncomingProjectile> projectile) {
         
@@ -257,7 +257,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
 	//Lorsque je l'ai testé sur mon ordi le bot se deconnecté mais je ne sais pas si ca vient
 	// du code ou de mon ordi donc je le met entre commentaire
 	//il s'agit d'une fonction qui fait des esquives lorsque le bot voit des projectiles.
-	
 	
     /**
      * Used internally to maintain the information about the bot we're currently
@@ -928,7 +927,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     protected boolean passingByItem(){
         Item nearestItem = items.getPathNearestSpawnedItem();
         if (nearestItem != null)
-            return (nearestItem.getLocation().getDistance(bot.getLocation()) < 500);
+            return (nearestItem.getLocation().getDistance(bot.getLocation()) < 500 && isItemInterseting(nearestItem));
         else 
             return false ;
     }
@@ -999,7 +998,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         Location itemLocation = item.getLocation();
         Collection<Item> spawnedItems = items.getSpawnedItems().values();
         for (Item spawnedItem : spawnedItems)
-            if (itemLocation.getDistance(spawnedItem.getLocation()) < distMin && itemLocation.getDistance(spawnedItem.getLocation()) > 10){
+            if (itemLocation.getDistance(spawnedItem.getLocation()) < distMin && itemLocation.getDistance(spawnedItem.getLocation()) > 10 && isItemInterseting(spawnedItem)){
                 distMin = itemLocation.getDistance(spawnedItem.getLocation());
                 nearestItem = spawnedItem ;
             }
@@ -1028,6 +1027,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
     }
 }
