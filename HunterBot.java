@@ -271,8 +271,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         weaponPrefs.addGeneralPref(UT2004ItemType.BIO_RIFLE, true);
 		
         // AND THEN RANGED
-        weaponPrefs.newPrefsRange(80)
-                .add(UT2004ItemType.SHIELD_GUN, true);
+        //weaponPrefs.newPrefsRange(80).add(UT2004ItemType.SHIELD_GUN, true);
         
         weaponPrefs.newPrefsRange(400)
                 .add(UT2004ItemType.FLAK_CANNON, true)
@@ -312,7 +311,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     public Initialize getInitializeCommand() {
         // just set the name of the bot and his skill level, 1 is the lowest, 7 is the highest
     	// skill level affects how well will the bot aim
-        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(5);
+        return new Initialize().setName("Hunter-" + (++instanceCount)).setDesiredSkill(6);
     }
 
     @Override
@@ -457,7 +456,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         }
         
         
-        if(comportementBot.getHumeurBot().equals(HumeurBot.Neutre) || comportementBot.getHumeurBot().equals(HumeurBot.Confiant)){
+        //if(comportementBot.getHumeurBot().equals(HumeurBot.Neutre) || comportementBot.getHumeurBot().equals(HumeurBot.Confiant)){
             if(comportementBot.getHumeurBot() == HumeurBot.Confiant){
                 //log.info("JE SUIS CONFIANT");
                 // a determiner
@@ -511,7 +510,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             }
             // 6) if nothing ... run around items
             stateRunAroundItems();
-        }
+        //}
     }
     
     //////////////////
@@ -578,18 +577,18 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             // 2) or shoot on enemy if it is visible
             
             //Donne au bot le shock rifle et des munitions, a supprimer
-            /*if (!weaponry.hasWeapon(UT2004ItemType.SHOCK_RIFLE)) {
-            log.info("Getting WEAPON");
-            getAct().act(new AddInventory().setType(UT2004ItemType.SHOCK_RIFLE.getName()));
+            /*if (!weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN)) {
+                log.info("Getting WEAPON");
+                getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN.getName()));
             }
-            if (!weaponry.hasLoadedWeapon(UT2004ItemType.SHOCK_RIFLE)) {
-            log.info("Getting AMMO");
-            getAct().act(new AddInventory().setType(UT2004ItemType.SHOCK_RIFLE_AMMO.getName()));
+            if (!weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN)) {
+                log.info("Getting AMMO");
+                getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN_AMMO.getName()));
             }
-            weaponry.changeWeapon(UT2004ItemType.SHOCK_RIFLE);*/
+            weaponry.changeWeapon(UT2004ItemType.LIGHTNING_GUN);*/
             
             //Tir dans la tete si le lighting gun est current weapon
-            boolean headshot = random.nextFloat() > 0.7 ;
+            boolean headshot = random.nextFloat() > 0.3 ;
             if (headshot && weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN) && weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.LIGHTNING_GUN)) {
                 if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy.getLocation().addZ(40))) { 
                     log.info("Shooting lighting at enemy's head");
@@ -608,9 +607,11 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         shoot.shootSecondary(enemy);
                         if (seeIncomingProjectile()) {
                             IncomingProjectile proj = pickProjectile();
-                            if (proj.getType().equals("XWeapons.ShockProjectile")){
+                            if (proj.getType().equals("XWeapons.ShockProjectile") && enemy.getLocation().getDistance(proj.getLocation()) < 400 ){
                                 log.info("Shooting PROJECTILE");
                                 shoot.shoot(proj.getId());
+                            } else {
+                                getAct().act(new StopShooting());
                             }
                         }
                         shooting = true;
@@ -760,7 +761,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                     if (nextNearestItem != null)
                         navigation.setContinueTo(nextNearestItem.getLocation());
                     else 
-                            navigation.setContinueTo(item);
+                        navigation.setContinueTo(item);
                 } else {
                     navigation.navigate(item) ;
                 }
@@ -973,6 +974,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
                         System.out.println("Invalid port. Expecting numeric. Resuming with default port: "+port);
                 }
         }     
-    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(1);
+    	new UT2004BotRunner(HunterBot.class, "Hunter", host, port).setMain(true).setLogLevel(Level.INFO).startAgents(2);
     }
 }
