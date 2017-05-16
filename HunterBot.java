@@ -588,7 +588,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             weaponry.changeWeapon(UT2004ItemType.LIGHTNING_GUN);*/
             
             //Tir dans la tete si le lighting gun est current weapon
-            boolean headshot = random.nextFloat() > 0.3 ;
+            boolean headshot = random.nextFloat() > 0.6 ;
             if (headshot && weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN) && weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN) && (weaponry.getCurrentWeapon().getType()==UT2004ItemType.LIGHTNING_GUN)) {
                 if (shoot.shoot(weaponry.getCurrentWeapon(), true, enemy.getLocation().addZ(40))) { 
                     log.info("Shooting lighting at enemy's head");
