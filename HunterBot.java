@@ -205,6 +205,60 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         //test
         log.info(weaponsPriority.afficherListe());
     }
+	
+	/*
+	        @ObjectClassListener(objectClass = IncomingProjectile.class)
+    public void NeedToDodge(IWorldObjectEvent<IncomingProjectile> projectile) {
+        
+        log.warning("Incoming Projectile");
+        Player enemy2 = players.getNearestVisiblePlayer(players.getVisibleEnemies().values());
+        
+        if ( enemy2 == null )
+            {
+            getAct().act(new Rotate().setAmount(32000));    
+            }
+        else
+            {
+            if ( (logicIterationNumber%2) == 1 )
+                {
+                if ( (lastLogicTime%2) == 1)
+                    {
+                    log.warning("Dodge Right !");
+                    move.jump();
+                    move.dodgeRight(enemy2, false);
+                    }
+               else
+                    {
+                    log.warning("Strafe Right !");
+                    move.jump();
+                    move.strafeRight(200);
+                    }
+                }
+            else
+                {
+                if ( (lastLogicTime%2) == 1)
+                    {
+                    log.warning("Dodge Left !");
+                    move.jump();
+                    move.dodgeLeft(enemy2, false);
+                    }
+                else
+                    {
+                    log.warning("Strafe Left !");
+                    move.jump();
+                    move.strafeLeft(200);
+                    }
+                }
+            }
+    }
+	
+	
+	*/
+	//Lorsque je l'ai testé sur mon ordi le bot se deconnecté mais je ne sais pas si ca vient
+	// du code ou de mon ordi donc je le met entre commentaire
+	//il s'agit d'une fonction qui fait des esquives lorsque le bot voit des projectiles.
+	
+	
     /**
      * Used internally to maintain the information about the bot we're currently
      * hunting, i.e., should be firing at.
