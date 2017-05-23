@@ -205,58 +205,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         //test
         log.info(weaponsPriority.afficherListe());
     }
-    
-    /*
-	        @ObjectClassListener(objectClass = IncomingProjectile.class)
-    public void NeedToDodge(IWorldObjectEvent<IncomingProjectile> projectile) {
-        
-        log.warning("Incoming Projectile");
-        Player enemy2 = players.getNearestVisiblePlayer(players.getVisibleEnemies().values());
-        
-        if ( enemy2 == null )
-            {
-            getAct().act(new Rotate().setAmount(32000));    
-            }
-        else
-            {
-            if ( (logicIterationNumber%2) == 1 )
-                {
-                if ( (lastLogicTime%2) == 1)
-                    {
-                    log.warning("Dodge Right !");
-                    move.jump();
-                    move.dodgeRight(enemy2, false);
-                    }
-               else
-                    {
-                    log.warning("Strafe Right !");
-                    move.jump();
-                    move.strafeRight(200);
-                    }
-                }
-            else
-                {
-                if ( (lastLogicTime%2) == 1)
-                    {
-                    log.warning("Dodge Left !");
-                    move.jump();
-                    move.dodgeLeft(enemy2, false);
-                    }
-                else
-                    {
-                    log.warning("Strafe Left !");
-                    move.jump();
-                    move.strafeLeft(200);
-                    }
-                }
-            }
-    }
-	
-	
-	*/
-	//Lorsque je l'ai testé sur mon ordi le bot se deconnecté mais je ne sais pas si ca vient
-	// du code ou de mon ordi donc je le met entre commentaire
-	//il s'agit d'une fonction qui fait des esquives lorsque le bot voit des projectiles.
 	
     /**
      * Used internally to maintain the information about the bot we're currently
@@ -478,47 +426,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         comportementBot.changementHumeurBot(deaths, frags, healthLevel);
         HumeurBot newHumeur = comportementBot.getHumeurBot();
         
-        if (!newHumeur.equals(previousHumeur))
-            sayGlobal("Je suis " + newHumeur.name());
-            log.info("Je suis " + newHumeur);
-        
-        if(comportementBot.getHumeurBot().equals(HumeurBot.Nerveux)){
-            //log.info("JE SUIS NERVEUX");
-            
-            // Comportement nerveux
-            // a determiner
-        }
-        
-        
-        if(comportementBot.getHumeurBot().equals(HumeurBot.Enrage)){
-            //log.info("JE SUIS ENRAGE");
-            
-            // Comportement enragé
-            // a determiner
-
-        }
-        
-        
-        
-        if(comportementBot.getHumeurBot().equals(HumeurBot.Decourage)){
-            //log.info("JE SUIS DECOURAGE");
-            
-            // Comportement découragé
-            // a determiner
-
-        }
-        
-        
-        //if(comportementBot.getHumeurBot().equals(HumeurBot.Neutre) || comportementBot.getHumeurBot().equals(HumeurBot.Confiant)){
-            if(comportementBot.getHumeurBot() == HumeurBot.Confiant){
-                //log.info("JE SUIS CONFIANT");
-                // a determiner
-            }
-            if(comportementBot.getHumeurBot() == HumeurBot.Neutre){
-                //log.info("JE SUIS NEUTRE");
-            }
-            
-            // Comportement NEUTRE
+        // Comportement NEUTRE
 
             
             if (info.getHealth() < criticalHealthLevel) {
@@ -629,16 +537,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         } else {
             // 2) or shoot on enemy if it is visible
             
-            //Donne au bot le shock rifle et des munitions, a supprimer
-            /*if (!weaponry.hasWeapon(UT2004ItemType.LIGHTNING_GUN)) {
-                log.info("Getting WEAPON");
-                getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN.getName()));
-            }
-            if (!weaponry.hasLoadedWeapon(UT2004ItemType.LIGHTNING_GUN)) {
-                log.info("Getting AMMO");
-                getAct().act(new AddInventory().setType(UT2004ItemType.LIGHTNING_GUN_AMMO.getName()));
-            }
-            weaponry.changeWeapon(UT2004ItemType.LIGHTNING_GUN);*/
             
             //Tir dans la tete si le lighting gun est current weapon
             boolean headshot = random.nextFloat() > 0.6 ;
@@ -958,8 +856,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
         } else {
             if (item.getType().getGroup().toString().equals("ASSAULT_RIFLE"))
                 return weaponry.getAmmo(item.getType()) < 200 ;
-            /*if (item.getType().getName().equals("ASSAULT_RIFLE_GRENADE"))
-            return weaponry.getAmmo(item.getType()) <= 8 ;*/
             if (item.getType().getGroup().toString().equals("BIO_RIFLE"))
                 return weaponry.getAmmo(item.getType()) < 50 ;
             if (item.getType().getGroup().toString().equals("FLAK_CANNON"))
