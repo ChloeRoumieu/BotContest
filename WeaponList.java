@@ -166,15 +166,15 @@ public class WeaponList {
         return weaponListSorted.get(rand.nextInt(weaponListSorted.size()));
      }
     
-    //TEST A SUPPRIMER
-    public String afficherListe () {
-        String out="Liste !! \n";
-        for (WeaponIA w : weaponsList) {
-            out += w.getTypeWeapon().getName() + " : " + w.getProba();
-            out += " \n";
-        }
-        return out;
-    }
+//    TEST A SUPPRIMER
+//    public String afficherListe () {
+//        String out="Liste !! \n";
+//        for (WeaponIA w : weaponsList) {
+//            out += w.getTypeWeapon().getName() + " : " + w.getProba();
+//            out += " \n";
+//        }
+//        return out;
+//    }
     
     public int getSize() {
         return weaponsList.size();

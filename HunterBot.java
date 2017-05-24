@@ -68,8 +68,8 @@ import javax.vecmath.Vector3d;
 public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     
     /* module pour gérer les combos d'adrénaline */
-    protected OurAdrenalineCombo adrenalineCombo;
-    protected Comportement comportementBot = new Comportement();
+//    protected OurAdrenalineCombo adrenalineCombo;
+//    protected Comportement comportementBot = new Comportement();
     
     /**
 	 * Initializes memory/command modules of the bot.
@@ -79,7 +79,7 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
     @Override
     protected void initializeModules(UT2004Bot bot) {
         super.initializeModules(bot);
-        adrenalineCombo = new OurAdrenalineCombo(bot, info);
+//        adrenalineCombo = new OurAdrenalineCombo(bot, info);
     }
     
     // Constants for rays' ids. It is allways better to store such values
@@ -201,9 +201,6 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
             WeaponIA newWeapon = weaponsPriority.getNextWeapon(weaponry.getLoadedWeapons().values());
             weaponPrefs.addGeneralPref(newWeapon.getTypeWeapon(), newWeapon.getPrimary());
         }
-        
-        //test
-        log.info(weaponsPriority.afficherListe());
     }
 	
     /**
@@ -422,9 +419,9 @@ public class HunterBot extends UT2004BotModuleController<UT2004Bot> {
      */
     @Override
     public void logic() {
-        HumeurBot previousHumeur = comportementBot.getHumeurBot();
-        comportementBot.changementHumeurBot(deaths, frags, healthLevel);
-        HumeurBot newHumeur = comportementBot.getHumeurBot();
+//        HumeurBot previousHumeur = comportementBot.getHumeurBot();
+//        comportementBot.changementHumeurBot(deaths, frags, healthLevel);
+//        HumeurBot newHumeur = comportementBot.getHumeurBot();
         
         // Comportement NEUTRE
 
